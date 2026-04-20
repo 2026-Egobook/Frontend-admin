@@ -9,27 +9,29 @@
 
 
 ## 폴더 구조
-```
-src/ 
-├── app/                    # 페이지 및 라우팅
-│   └── [feature]/          # 기능별 페이지
-│       ├── api/            # 페이지 전용 API 로직
-│       ├── components/     # 페이지 전용 컴포넌트
-│       ├── hooks/          # 페이지 전용 훅
-│       ├── state/          # 페이지 전용 상태
-│       ├── utils/          # 페이지 전용 유틸
-│       └── index.jsx       # 페이지 컴포넌트
+```bash
+src/
+├── app/                    # 앱 전역 설정
+│   ├── routes/             # 라우터
+│   ├── layouts/            # 공통 레이아웃
+│   └── providers/          # 전역 provider
+│
+├── features/               # 기능 단위 폴더
+│
+├── shared/                 # 공통 코드
+│   ├── api/
+│   ├── components/
+│   ├── hooks/
+│   ├── stores/
+│   └── utils/
 │
 ├── assets/                 # 정적 에셋
-│   ├── icon/               # svg 아이콘
-│   └── image/              # 이미지
+│   ├── icon/
+│   └── image/
 │
-└── shared/                 # 공통 코드
-    ├── components/         # 재사용 컴포넌트
-    ├── hooks/              # 공통 훅
-    ├── api/                # API 설정 및 인스턴스
-    ├── stores/             # 전역 상태 (Zustand)
-    └── utils/              # 공통 유틸 함수
+├── App.jsx
+├── main.jsx
+└── index.css
 ```
 
 ## 개발 규칙
