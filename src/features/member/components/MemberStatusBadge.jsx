@@ -7,8 +7,8 @@ const STATUS_STYLE = {
 function MemberStatusBadge({ status }) {
   return (
     <span
-      className={`inline-flex items-center rounded px-2 py-1 text-xs font-normal leading-4 ${
-        STATUS_STYLE[status] || 'bg-gray-100 text-gray-700'
+      className={`inline-flex items-center rounded px-2 py-1 text-xs font-medium leading-4 ${
+        STATUS_STYLE[status] || 'bg-neutral-100 text-neutral-700'
       }`}
     >
       {status}
