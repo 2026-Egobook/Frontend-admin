@@ -20,13 +20,13 @@ function DailyStatsTable({ rows = [] }) {
             <tr key={row.date} className="h-9 border-b border-neutral-100">
               <td className="px-4 text-sm font-normal leading-5 text-neutral-950">{row.date}</td>
               <td className="px-4 text-right text-sm font-normal leading-5 text-neutral-950">
-                {row.scheduled}
+                {row.scheduledCount}
               </td>
               <td className="px-4 text-right text-sm font-normal leading-5 text-neutral-950">
-                {row.completed}
+                {row.completedCount}
               </td>
               <td className="px-4 text-right text-sm font-normal leading-5 text-red-600">
-                {row.failed}
+                {row.failedCount}
               </td>
             </tr>
           ))}
