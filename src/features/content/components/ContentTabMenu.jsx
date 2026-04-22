@@ -1,8 +1,8 @@
 const tabs = [
-  { key: 'dailyPraise', label: 'AI 일간 칭찬서' },
-  { key: 'weeklyReport', label: 'AI 주간 리포트' },
-  { key: 'letter', label: '편지' },
-  { key: 'badWord', label: '나쁜말 AI' },
+  { key: 'dailyPraise', label: 'AI 일간 칭찬서', widthClass: 'w-40' },
+  { key: 'weeklyReport', label: 'AI 주간 리포트', widthClass: 'w-40' },
+  { key: 'letter', label: '편지', widthClass: 'w-24' },
+  { key: 'badWord', label: '나쁜말 AI', widthClass: 'w-28' },
 ];
 
 export default function ContentTabMenu({ activeTab, onChange }) {
@@ -16,15 +16,9 @@ export default function ContentTabMenu({ activeTab, onChange }) {
             key={tab.key}
             type="button"
             onClick={() => onChange(tab.key)}
-            className={`flex h-12 items-center border-b-2 text-sm font-medium leading-5 ${
+            className={`flex h-12 items-center justify-center border-b-2 text-sm font-medium leading-5 ${
               active ? 'border-black text-neutral-950' : 'border-transparent text-neutral-600'
-            } ${
-              tab.key === 'letter'
-                ? 'w-24 justify-center'
-                : tab.key === 'badWord'
-                  ? 'w-28 justify-center'
-                  : 'w-40 justify-center'
-            }`}
+            } ${tab.widthClass}`}
           >
             {tab.label}
           </button>
