@@ -7,11 +7,60 @@ const DAILY_PRAISE_STATS = {
     scheduledCount: 120,
   },
   dailyStats: [
-    { date: '2026-04-01', scheduled: 20, completed: 18, failed: 2 },
-    { date: '2026-04-02', scheduled: 25, completed: 24, failed: 1 },
-    { date: '2026-04-03', scheduled: 22, completed: 20, failed: 2 },
-    { date: '2026-04-04', scheduled: 18, completed: 17, failed: 1 },
-    { date: '2026-04-05', scheduled: 19, completed: 17, failed: 2 },
+    {
+      date: '2026-04-01',
+      scheduledCount: 20,
+      completedCount: 18,
+      failedCount: 2,
+    },
+    {
+      date: '2026-04-02',
+      scheduledCount: 25,
+      completedCount: 24,
+      failedCount: 1,
+    },
+    {
+      date: '2026-04-03',
+      scheduledCount: 22,
+      completedCount: 20,
+      failedCount: 2,
+    },
+    {
+      date: '2026-04-04',
+      scheduledCount: 18,
+      completedCount: 17,
+      failedCount: 1,
+    },
+    {
+      date: '2026-04-05',
+      scheduledCount: 19,
+      completedCount: 17,
+      failedCount: 2,
+    },
+    {
+      date: '2026-04-06',
+      scheduledCount: 10,
+      completedCount: 9,
+      failedCount: 1,
+    },
+    {
+      date: '2026-04-07',
+      scheduledCount: 8,
+      completedCount: 7,
+      failedCount: 1,
+    },
+    {
+      date: '2026-04-08',
+      scheduledCount: 9,
+      completedCount: 8,
+      failedCount: 1,
+    },
+    {
+      date: '2026-04-09',
+      scheduledCount: 9,
+      completedCount: 8,
+      failedCount: 1,
+    },
   ],
   failureLogs: [
     {
@@ -38,6 +87,32 @@ const DAILY_PRAISE_STATS = {
   ],
 };
 
+const WEEKLY_REPORT_STATS = {
+  startDate: '2026-04-01',
+  endDate: '2026-04-09',
+  summary: {
+    completedCount: 72,
+    failedCount: 8,
+    scheduledCount: 80,
+  },
+  failureLogs: [
+    {
+      failureId: 101,
+      userId: 12,
+      failedAt: '2026-04-03T08:10:11',
+      reason: 'USER_INACTIVE',
+      checked: true,
+    },
+    {
+      failureId: 102,
+      userId: 23,
+      failedAt: '2026-04-05T09:22:33',
+      reason: 'FCM_TOKEN_NOT_FOUND',
+      checked: false,
+    },
+  ],
+};
+
 export const getDailyPraiseStats = async ({ startDate, endDate }) => {
   await new Promise((resolve) => setTimeout(resolve, 150));
 
@@ -49,6 +124,25 @@ export const getDailyPraiseStats = async ({ startDate, endDate }) => {
 };
 
 export const resendDailyPraiseFailures = async ({ failureIds }) => {
+  await new Promise((resolve) => setTimeout(resolve, 150));
+
+  return {
+    success: true,
+    resentFailureIds: failureIds,
+  };
+};
+
+export const getWeeklyReportStats = async ({ startDate, endDate }) => {
+  await new Promise((resolve) => setTimeout(resolve, 150));
+
+  return {
+    ...WEEKLY_REPORT_STATS,
+    startDate: startDate || WEEKLY_REPORT_STATS.startDate,
+    endDate: endDate || WEEKLY_REPORT_STATS.endDate,
+  };
+};
+
+export const resendWeeklyReportFailures = async ({ failureIds }) => {
   await new Promise((resolve) => setTimeout(resolve, 150));
 
   return {
