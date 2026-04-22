@@ -138,6 +138,44 @@ const LETTER_STATS = {
   ],
 };
 
+const BAD_WORD_STATS = {
+  startDate: '2026-04-01',
+  endDate: '2026-04-09',
+  summary: {
+    blockedCount: 18,
+    blockedRate: '12.5%',
+  },
+  blockedTexts: [
+    {
+      blockId: 1,
+      userId: 42,
+      contentType: 'LETTER',
+      createdAt: '2026-04-01T14:20:30',
+      originalText: '진짜 너무 짜증나고 욕하고 싶어요',
+      keywords: ['짜증', '욕'],
+      score: '87%',
+    },
+    {
+      blockId: 2,
+      userId: 58,
+      contentType: 'REPLY',
+      createdAt: '2026-04-02T10:15:45',
+      originalText: '바보같은 소리 하지마',
+      keywords: ['바보'],
+      score: '82%',
+    },
+    {
+      blockId: 3,
+      userId: 73,
+      contentType: 'PRAISE',
+      createdAt: '2026-04-03T16:42:12',
+      originalText: '멍청한 칭찬이네',
+      keywords: ['멍청'],
+      score: '91%',
+    },
+  ],
+};
+
 export const getDailyPraiseStats = async ({ startDate, endDate }) => {
   await new Promise((resolve) => setTimeout(resolve, 150));
 
@@ -183,5 +221,15 @@ export const getLetterStats = async ({ startDate, endDate }) => {
     ...LETTER_STATS,
     startDate: startDate || LETTER_STATS.startDate,
     endDate: endDate || LETTER_STATS.endDate,
+  };
+};
+
+export const getBadWordStats = async ({ startDate, endDate }) => {
+  await new Promise((resolve) => setTimeout(resolve, 150));
+
+  return {
+    ...BAD_WORD_STATS,
+    startDate: startDate || BAD_WORD_STATS.startDate,
+    endDate: endDate || BAD_WORD_STATS.endDate,
   };
 };

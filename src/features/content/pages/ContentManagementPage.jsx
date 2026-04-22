@@ -3,9 +3,11 @@ import ContentTabMenu from '../components/ContentTabMenu';
 import DailyPraiseSection from '../components/DailyPraiseSection';
 import WeeklyReportSection from '../components/WeeklyReportSection';
 import LetterSection from '../components/LetterSection';
+import BadWordAiSection from '../components/BadWordAiSection';
 import useDailyPraiseStats from '../hooks/useDailyPraiseStats';
 import useWeeklyReportStats from '../hooks/useWeeklyReportStats';
 import useLetterStats from '../hooks/useLetterStats';
+import useBadWordStats from '../hooks/useBadWordStats';
 import { resendDailyPraiseFailures, resendWeeklyReportFailures } from '../api/contentApi';
 
 export default function ContentManagementPage() {
@@ -40,6 +42,11 @@ export default function ContentManagementPage() {
   };
 
   const { data: letterData, isLoading: isLetterLoading } = useLetterStats({
+    startDate,
+    endDate,
+  });
+
+  const { data: badWordData, isLoading: isBadWordLoading } = useBadWordStats({
     startDate,
     endDate,
   });
@@ -107,9 +114,21 @@ export default function ContentManagementPage() {
       )}
 
       {activeTab === 'badWord' && (
-        <div className="rounded-[10px] border border-neutral-200 bg-white px-6 py-10 text-sm text-neutral-500">
-          나쁜말 AI 영역
-        </div>
+        <>
+          {isBadWordLoading || !badWordData ? (
+            <div className="rounded-[10px] border border-neutral-200 bg-white px-6 py-10 text-sm text-neutral-500">
+              데이터를 불러오는 중입니다.
+            </div>
+          ) : (
+            <BadWordAiSection
+              data={badWordData}
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={setStartDate}
+              onEndDateChange={setEndDate}
+            />
+          )}
+        </>
       )}
     </div>
   );
