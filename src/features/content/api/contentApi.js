@@ -113,6 +113,31 @@ const WEEKLY_REPORT_STATS = {
   ],
 };
 
+const LETTER_STATS = {
+  startDate: '2026-04-01',
+  endDate: '2026-04-09',
+  summary: {
+    completedCount: 250,
+    pendingCount: 34,
+    aiReplyCount: 18,
+    failedCount: 4,
+  },
+  failureLogs: [
+    {
+      logId: 1,
+      letterId: 2001,
+      failedAt: '2026-04-02T11:20:10',
+      reason: 'NO_RECEIVER_AVAILABLE',
+    },
+    {
+      logId: 2,
+      letterId: 2034,
+      failedAt: '2026-04-03T14:35:22',
+      reason: 'USER_BLOCKED',
+    },
+  ],
+};
+
 export const getDailyPraiseStats = async ({ startDate, endDate }) => {
   await new Promise((resolve) => setTimeout(resolve, 150));
 
@@ -148,5 +173,15 @@ export const resendWeeklyReportFailures = async ({ failureIds }) => {
   return {
     success: true,
     resentFailureIds: failureIds,
+  };
+};
+
+export const getLetterStats = async ({ startDate, endDate }) => {
+  await new Promise((resolve) => setTimeout(resolve, 150));
+
+  return {
+    ...LETTER_STATS,
+    startDate: startDate || LETTER_STATS.startDate,
+    endDate: endDate || LETTER_STATS.endDate,
   };
 };

@@ -2,8 +2,10 @@ import { useState } from 'react';
 import ContentTabMenu from '../components/ContentTabMenu';
 import DailyPraiseSection from '../components/DailyPraiseSection';
 import WeeklyReportSection from '../components/WeeklyReportSection';
+import LetterSection from '../components/LetterSection';
 import useDailyPraiseStats from '../hooks/useDailyPraiseStats';
 import useWeeklyReportStats from '../hooks/useWeeklyReportStats';
+import useLetterStats from '../hooks/useLetterStats';
 import { resendDailyPraiseFailures, resendWeeklyReportFailures } from '../api/contentApi';
 
 export default function ContentManagementPage() {
@@ -36,6 +38,11 @@ export default function ContentManagementPage() {
 
     await resendWeeklyReportFailures({ failureIds });
   };
+
+  const { data: letterData, isLoading: isLetterLoading } = useLetterStats({
+    startDate,
+    endDate,
+  });
 
   return (
     <div className="flex flex-col gap-6">
@@ -82,9 +89,21 @@ export default function ContentManagementPage() {
       )}
 
       {activeTab === 'letter' && (
-        <div className="rounded-[10px] border border-neutral-200 bg-white px-6 py-10 text-sm text-neutral-500">
-          편지 영역
-        </div>
+        <>
+          {isLetterLoading || !letterData ? (
+            <div className="rounded-[10px] border border-neutral-200 bg-white px-6 py-10 text-sm text-neutral-500">
+              데이터를 불러오는 중입니다.
+            </div>
+          ) : (
+            <LetterSection
+              data={letterData}
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={setStartDate}
+              onEndDateChange={setEndDate}
+            />
+          )}
+        </>
       )}
 
       {activeTab === 'badWord' && (
