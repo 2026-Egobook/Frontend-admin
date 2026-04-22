@@ -1,25 +1,40 @@
 import { useState } from 'react';
 import ContentTabMenu from '../components/ContentTabMenu';
 import DailyPraiseSection from '../components/DailyPraiseSection';
+import WeeklyReportSection from '../components/WeeklyReportSection';
 import useDailyPraiseStats from '../hooks/useDailyPraiseStats';
-import { resendDailyPraiseFailures } from '../api/contentApi';
+import useWeeklyReportStats from '../hooks/useWeeklyReportStats';
+import { resendDailyPraiseFailures, resendWeeklyReportFailures } from '../api/contentApi';
 
 export default function ContentManagementPage() {
-  const [activeTab, setActiveTab] = useState('dailyPraise');
+  const [activeTab, setActiveTab] = useState('weeklyReport');
   const [startDate, setStartDate] = useState(new Date('2026-04-01'));
   const [endDate, setEndDate] = useState(new Date('2026-04-09'));
 
-  const { data, isLoading } = useDailyPraiseStats({
+  const { data: dailyPraiseData, isLoading: isDailyPraiseLoading } = useDailyPraiseStats({
     startDate,
     endDate,
   });
 
-  const handleResend = async (selectedLogs) => {
+  const { data: weeklyReportData, isLoading: isWeeklyReportLoading } = useWeeklyReportStats({
+    startDate,
+    endDate,
+  });
+
+  const handleResendDailyPraise = async (selectedLogs) => {
     const failureIds = selectedLogs.map((log) => log.failureId);
 
     if (failureIds.length === 0) return;
 
     await resendDailyPraiseFailures({ failureIds });
+  };
+
+  const handleResendWeeklyReport = async (selectedLogs) => {
+    const failureIds = selectedLogs.map((log) => log.failureId);
+
+    if (failureIds.length === 0) return;
+
+    await resendWeeklyReportFailures({ failureIds });
   };
 
   return (
@@ -30,27 +45,40 @@ export default function ContentManagementPage() {
 
       {activeTab === 'dailyPraise' && (
         <>
-          {isLoading || !data ? (
+          {isDailyPraiseLoading || !dailyPraiseData ? (
             <div className="rounded-[10px] border border-neutral-200 bg-white px-6 py-10 text-sm text-neutral-500">
               데이터를 불러오는 중입니다.
             </div>
           ) : (
             <DailyPraiseSection
-              data={data}
+              data={dailyPraiseData}
               startDate={startDate}
               endDate={endDate}
               onStartDateChange={setStartDate}
               onEndDateChange={setEndDate}
-              onResend={handleResend}
+              onResend={handleResendDailyPraise}
             />
           )}
         </>
       )}
 
       {activeTab === 'weeklyReport' && (
-        <div className="rounded-[10px] border border-neutral-200 bg-white px-6 py-10 text-sm text-neutral-500">
-          AI 주간 리포트 영역
-        </div>
+        <>
+          {isWeeklyReportLoading || !weeklyReportData ? (
+            <div className="rounded-[10px] border border-neutral-200 bg-white px-6 py-10 text-sm text-neutral-500">
+              데이터를 불러오는 중입니다.
+            </div>
+          ) : (
+            <WeeklyReportSection
+              data={weeklyReportData}
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={setStartDate}
+              onEndDateChange={setEndDate}
+              onResend={handleResendWeeklyReport}
+            />
+          )}
+        </>
       )}
 
       {activeTab === 'letter' && (
