@@ -4,6 +4,7 @@ import LoginPage from '../../features/auth/pages/LoginPage';
 import MemberListPage from '../../features/member/pages/MemberListPage';
 import MemberDetailPage from '../../features/member/pages/MemberDetailPage';
 import ContentManagementPage from '../../features/content/pages/ContentManagementPage';
+import ReportListPage from '@/features/report/pages/ReportListPage';
 import { PATH } from './path';
 
 export default function Router() {
@@ -16,6 +17,7 @@ export default function Router() {
           <Route path={PATH.MEMBER_LIST} element={<MemberListPage />} />
           <Route path={PATH.MEMBER_DETAIL} element={<MemberDetailPage />} />
           <Route path={PATH.CONTENT} element={<ContentManagementPage />} />
+          <Route path="/reports" element={<ReportListPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to={PATH.MEMBER_LIST} replace />} />
