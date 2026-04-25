@@ -1,10 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import ReportStatusBadge from './ReportStatusBadge';
 
-function formatDateTime(dateTime) {
-  return dateTime;
-}
-
 export default function ReportTable({ reports = [] }) {
   const navigate = useNavigate();
 
@@ -26,48 +22,49 @@ export default function ReportTable({ reports = [] }) {
         </thead>
 
         <tbody>
-          {reports.map((report) => (
-            <tr
-              key={report.reportId}
-              className={`border-b border-neutral-200 ${
-                report.isNew && report.status === 'PENDING' ? 'bg-[#F3D6D6]' : 'bg-white'
-              }`}
-            >
-              <td className="px-6 py-6 text-sm font-normal leading-5 text-neutral-950">
-                {report.reportId}
-              </td>
-              <td className="px-6 py-6 text-sm font-normal leading-5 text-neutral-950">
-                {report.contentTypeLabel}
-              </td>
-              <td className="px-6 py-6 text-sm font-normal leading-5 text-neutral-950">
-                {report.content}
-              </td>
-              <td className="px-6 py-6 text-sm font-normal leading-5 text-neutral-950">
-                {report.authorId}
-              </td>
-              <td className="px-6 py-6 text-sm font-normal leading-5 text-neutral-950">
-                {report.reason}
-              </td>
-              <td className="px-6 py-6 text-sm font-normal leading-5 text-neutral-950">
-                {report.totalReportCount}회
-              </td>
-              <td className="px-6 py-6">
-                <ReportStatusBadge status={report.status} label={report.statusLabel} />
-              </td>
-              <td className="px-6 py-6 text-sm font-normal leading-5 text-neutral-600">
-                {formatDateTime(report.createdAt)}
-              </td>
-              <td className="px-6 py-6">
-                <button
-                  type="button"
-                  onClick={() => navigate(`/reports/${report.reportId}`)}
-                  className="text-sm font-normal leading-5 text-black"
-                >
-                  상세보기
-                </button>
-              </td>
-            </tr>
-          ))}
+          {reports.map((report) => {
+            const isHighlight = report.isNew && report.status === 'PENDING';
+            const rowBg = isHighlight ? 'bg-[#F3D6D6]' : 'bg-white';
+
+            return (
+              <tr key={report.reportId} className="border-b border-neutral-200">
+                <td className={`px-6 py-6 text-sm text-neutral-950 ${rowBg}`}>{report.reportId}</td>
+
+                <td className={`px-6 py-6 text-sm text-neutral-950 ${rowBg}`}>
+                  {report.contentTypeLabel}
+                </td>
+
+                <td className={`px-6 py-6 text-sm text-neutral-950 ${rowBg}`}>{report.content}</td>
+
+                <td className={`px-6 py-6 text-sm text-neutral-950 ${rowBg}`}>{report.authorId}</td>
+
+                <td className={`px-6 py-6 text-sm text-neutral-950 ${rowBg}`}>{report.reason}</td>
+
+                <td className={`px-6 py-6 text-sm text-neutral-950 ${rowBg}`}>
+                  {report.totalReportCount}회
+                </td>
+
+                <td className={`px-6 py-6 align-middle ${rowBg}`}>
+                  <ReportStatusBadge status={report.status} label={report.statusLabel} />
+                </td>
+
+                <td className={`px-6 py-6 text-sm text-neutral-600 ${rowBg}`}>
+                  {report.createdAt}
+                </td>
+
+                <td className={`px-6 py-6 align-middle ${rowBg}`}>
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/reports/${report.reportId}`)}
+                    className="w-8 text-center text-sm leading-5 text-black hover:underline"
+                  >
+                    <span className="block">상세</span>
+                    <span className="block">보기</span>
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
