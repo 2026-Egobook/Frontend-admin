@@ -6,6 +6,7 @@ import MemberDetailPage from '../../features/member/pages/MemberDetailPage';
 import ContentManagementPage from '../../features/content/pages/ContentManagementPage';
 import ReportListPage from '../../features/report/pages/ReportListPage';
 import ReportDetailPage from '../../features/report/pages/ReportDetailPage';
+import CrudManagementPage from '@/features/crud/pages/CrudManagementPage';
 import { PATH } from './path';
 
 export default function Router() {
@@ -20,6 +21,7 @@ export default function Router() {
           <Route path={PATH.CONTENT} element={<ContentManagementPage />} />
           <Route path={PATH.REPORT_LIST} element={<ReportListPage />} />
           <Route path={PATH.REPORT_DETAIL} element={<ReportDetailPage />} />
+          <Route path={PATH.CRUD} element={<CrudManagementPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to={PATH.MEMBER_LIST} replace />} />
