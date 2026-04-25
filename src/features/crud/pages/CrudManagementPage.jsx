@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import CrudTabMenu from '../components/CrudTabMenu';
-import PsychologyKnowledgeTable from '../components/PsychologyKnowledgeTable';
-import PsychologyKnowledgeModal from '../components/PsychologyKnowledgeModal';
-import QuestionDummyTable from '../components/QuestionDummyTable';
-import QuestionDummyModal from '../components/QuestionDummyModal';
-import ItemTable from '../components/ItemTable';
-import ItemModal from '../components/ItemModal';
-import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import CrudTabMenu from '../components/common/CrudTabMenu';
+import PsychologyKnowledgeTable from '../components/psychology/PsychologyKnowledgeTable';
+import PsychologyKnowledgeModal from '../components/psychology/PsychologyKnowledgeModal';
+import QuestionDummyTable from '../components/question/QuestionDummyTable';
+import QuestionDummyModal from '../components/question/QuestionDummyModal';
+import ItemTable from '../components/item/ItemTable';
+import ItemModal from '../components/item/ItemModal';
+import DeleteConfirmModal from '../components/common/DeleteConfirmModal';
 import {
   useCreatePsychologyKnowledge,
   useDeletePsychologyKnowledge,

@@ -1,4 +1,3 @@
-// src/features/crud/components/QuestionDummyTable.jsx
 export default function QuestionDummyTable({ rows = [], onEdit, onDelete }) {
   return (
     <div className="overflow-hidden rounded-[10px] border border-neutral-200 bg-white">

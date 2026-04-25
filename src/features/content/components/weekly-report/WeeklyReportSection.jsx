@@ -1,5 +1,5 @@
-import DateRangeFilter from '../../../shared/components/ui/date-picker/DateRangeFilter';
-import SendStatusCard from './SendStatusCard';
+import DateRangeFilter from '@/shared/components/ui/date-picker/DateRangeFilter';
+import SendStatusCard from '../common/SendStatusCard';
 import FailureLogList from './FailureLogList';
 
 export default function WeeklyReportSection({

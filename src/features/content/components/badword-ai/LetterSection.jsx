@@ -1,4 +1,4 @@
-import DateRangeFilter from '../../../shared/components/ui/date-picker/DateRangeFilter';
+import DateRangeFilter from '@/shared/components/ui/date-picker/DateRangeFilter';
 
 function LetterStatCard({ label, value, danger = false }) {
   return (

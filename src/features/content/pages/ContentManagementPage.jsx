@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import ContentTabMenu from '../components/ContentTabMenu';
-import DailyPraiseSection from '../components/DailyPraiseSection';
-import WeeklyReportSection from '../components/WeeklyReportSection';
-import LetterSection from '../components/LetterSection';
-import BadWordAiSection from '../components/BadWordAiSection';
+import ContentTabMenu from '../components/common/ContentTabMenu';
+import DailyPraiseSection from '../components/daily-praise/DailyPraiseSection';
+import WeeklyReportSection from '../components/weekly-report/WeeklyReportSection';
+import LetterSection from '../components/badword-ai/LetterSection';
+import BadWordAiSection from '../components/badword-ai/BadWordAiSection';
 import useDailyPraiseStats from '../hooks/useDailyPraiseStats';
 import useWeeklyReportStats from '../hooks/useWeeklyReportStats';
 import useLetterStats from '../hooks/useLetterStats';

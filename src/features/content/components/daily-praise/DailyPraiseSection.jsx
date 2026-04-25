@@ -1,6 +1,6 @@
-import DateRangeFilter from '../../../shared/components/ui/date-picker/DateRangeFilter';
-import SendStatusCard from './SendStatusCard';
-import FailureLogList from './FailureLogList';
+import DateRangeFilter from '@/shared/components/ui/date-picker/DateRangeFilter';
+import SendStatusCard from '../common/SendStatusCard';
+import FailureLogList from '../weekly-report/FailureLogList';
 
 function DailyStatsTable({ rows = [] }) {
   return (
