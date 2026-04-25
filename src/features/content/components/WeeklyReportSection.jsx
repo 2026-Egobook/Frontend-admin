@@ -1,4 +1,4 @@
-import DateRangeFilter from './DateRangeFilter';
+import DateRangeFilter from '../../../shared/components/ui/date-picker/DateRangeFilter';
 import SendStatusCard from './SendStatusCard';
 import FailureLogList from './FailureLogList';
 
