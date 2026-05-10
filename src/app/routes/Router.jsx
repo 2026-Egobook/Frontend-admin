@@ -7,6 +7,7 @@ import ContentManagementPage from '../../features/content/pages/ContentManagemen
 import ReportListPage from '../../features/report/pages/ReportListPage';
 import ReportDetailPage from '../../features/report/pages/ReportDetailPage';
 import CrudManagementPage from '@/features/crud/pages/CrudManagementPage';
+import StatisticsPage from '@/features/statistics/pages/StatisticsPage';
 import { PATH } from './path';
 
 export default function Router() {
@@ -22,6 +23,7 @@ export default function Router() {
           <Route path={PATH.REPORT_LIST} element={<ReportListPage />} />
           <Route path={PATH.REPORT_DETAIL} element={<ReportDetailPage />} />
           <Route path={PATH.CRUD} element={<CrudManagementPage />} />
+          <Route path={PATH.STATS} element={<StatisticsPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to={PATH.MEMBER_LIST} replace />} />
