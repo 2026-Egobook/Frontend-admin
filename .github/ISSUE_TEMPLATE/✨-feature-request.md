@@ -1,7 +1,7 @@
 ---
 name: "✨ Feature Request"
 about: 새로운 기능 구현을 위한 이슈입니다.
-title: "[Feat]: "
+title: "[Feat] "
 labels: feat
 assignees: ''
 type: Feature
