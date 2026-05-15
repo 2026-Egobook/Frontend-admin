@@ -27,14 +27,7 @@ function FilterGroup({ title, options, selectedValue, onChange }) {
   );
 }
 
-export default function ReportFilterPanel({
-  contentType,
-  status,
-  sort,
-  onChangeContentType,
-  onChangeStatus,
-  onChangeSort,
-}) {
+export default function ReportFilterPanel({ contentType, onChangeContentType }) {
   return (
     <div className="flex flex-col gap-4 rounded-[10px] border border-neutral-200 bg-white px-6 pt-6 pb-4">
       <FilterGroup
@@ -44,30 +37,8 @@ export default function ReportFilterPanel({
         options={[
           { label: '전체', value: 'ALL' },
           { label: '편지', value: 'LETTER' },
-          { label: '답장', value: 'REPLY' },
-          { label: '질문 답변', value: 'QUESTION' },
-        ]}
-      />
-
-      <FilterGroup
-        title="처리 상태"
-        selectedValue={status}
-        onChange={onChangeStatus}
-        options={[
-          { label: '전체', value: 'ALL' },
-          { label: '미처리', value: 'PENDING' },
-          { label: '제재완료', value: 'SANCTION_COMPLETED' },
-          { label: '반려', value: 'REJECTED' },
-        ]}
-      />
-
-      <FilterGroup
-        title="정렬"
-        selectedValue={sort}
-        onChange={onChangeSort}
-        options={[
-          { label: '최신순', value: 'LATEST' },
-          { label: '누적 신고순', value: 'REPORT_COUNT' },
+          { label: '편지 답장', value: 'REPLY' },
+          { label: '질문 답변', value: 'ANSWER' },
         ]}
       />
     </div>

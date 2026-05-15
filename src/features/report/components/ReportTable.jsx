@@ -12,7 +12,7 @@ export default function ReportTable({ reports = [] }) {
             <th className="px-6 text-sm font-medium leading-5 text-neutral-600">신고 ID</th>
             <th className="px-6 text-sm font-medium leading-5 text-neutral-600">콘텐츠 유형</th>
             <th className="px-6 text-sm font-medium leading-5 text-neutral-600">내용</th>
-            <th className="px-6 text-sm font-medium leading-5 text-neutral-600">작성자 ID</th>
+            <th className="px-6 text-sm font-medium leading-5 text-neutral-600">신고자 ID</th>
             <th className="px-6 text-sm font-medium leading-5 text-neutral-600">사유</th>
             <th className="px-6 text-sm font-medium leading-5 text-neutral-600">누적 신고</th>
             <th className="px-6 text-sm font-medium leading-5 text-neutral-600">상태</th>
@@ -22,40 +22,29 @@ export default function ReportTable({ reports = [] }) {
         </thead>
 
         <tbody>
-          {reports.map((report) => {
-            const isHighlight = report.isNew && report.status === 'PENDING';
-            const rowBg = isHighlight ? 'bg-[#F3D6D6]' : 'bg-white';
-
-            return (
-              <tr key={report.reportId} className="border-b border-neutral-200">
-                <td className={`px-6 py-6 text-sm text-neutral-950 ${rowBg}`}>{report.reportId}</td>
-
-                <td className={`px-6 py-6 text-sm text-neutral-950 ${rowBg}`}>
-                  {report.contentTypeLabel}
-                </td>
-
-                <td className={`px-6 py-6 text-sm text-neutral-950 ${rowBg}`}>{report.content}</td>
-
-                <td className={`px-6 py-6 text-sm text-neutral-950 ${rowBg}`}>{report.authorId}</td>
-
-                <td className={`px-6 py-6 text-sm text-neutral-950 ${rowBg}`}>{report.reason}</td>
-
-                <td className={`px-6 py-6 text-sm text-neutral-950 ${rowBg}`}>
-                  {report.totalReportCount}회
-                </td>
-
-                <td className={`px-6 py-6 align-middle ${rowBg}`}>
+          {reports.length === 0 ? (
+            <tr>
+              <td colSpan={9} className="px-6 py-10 text-center text-sm text-neutral-500">
+                조회된 신고가 없습니다.
+              </td>
+            </tr>
+          ) : (
+            reports.map((report) => (
+              <tr key={`${report.contentType}-${report.reportId}`} className="border-b border-neutral-200">
+                <td className="px-6 py-6 text-sm text-neutral-950">{report.reportId}</td>
+                <td className="px-6 py-6 text-sm text-neutral-950">{report.contentTypeLabel}</td>
+                <td className="px-6 py-6 text-sm text-neutral-950">{report.content}</td>
+                <td className="px-6 py-6 text-sm text-neutral-950">{report.authorId}</td>
+                <td className="px-6 py-6 text-sm text-neutral-950">{report.reason}</td>
+                <td className="px-6 py-6 text-sm text-neutral-950">{report.totalReportCount}회</td>
+                <td className="px-6 py-6 align-middle">
                   <ReportStatusBadge status={report.status} label={report.statusLabel} />
                 </td>
-
-                <td className={`px-6 py-6 text-sm text-neutral-600 ${rowBg}`}>
-                  {report.createdAt}
-                </td>
-
-                <td className={`px-6 py-6 align-middle ${rowBg}`}>
+                <td className="px-6 py-6 text-sm text-neutral-600">{report.createdAt}</td>
+                <td className="px-6 py-6 align-middle">
                   <button
                     type="button"
-                    onClick={() => navigate(`/reports/${report.reportId}`)}
+                    onClick={() => navigate(`/reports/${report.contentType}/${report.reportId}`)}
                     className="w-8 text-center text-sm leading-5 text-black hover:underline"
                   >
                     <span className="block">상세</span>
@@ -63,8 +52,8 @@ export default function ReportTable({ reports = [] }) {
                   </button>
                 </td>
               </tr>
-            );
-          })}
+            ))
+          )}
         </tbody>
       </table>
     </div>

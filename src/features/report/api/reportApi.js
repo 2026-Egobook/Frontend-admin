@@ -1,248 +1,179 @@
-const REPORT_LIST = [
-  {
-    reportId: 1,
-    contentType: 'LETTER',
-    contentTypeLabel: '편지',
-    content: '진짜 레전드나쁜말',
-    authorId: 42,
-    reason: '비속어 또는 모욕적인 표현이 있어요',
-    totalReportCount: 1,
-    status: 'PENDING',
-    statusLabel: '미처리',
-    createdAt: '2026-04-09T10:23:00',
-    isNew: true,
-  },
-  {
-    reportId: 2,
-    contentType: 'REPLY',
-    contentTypeLabel: '답장',
-    content: '평범한말',
-    authorId: 27,
-    reason: '비속어 또는 모욕적인 표현이 있어요',
-    totalReportCount: 1,
-    status: 'PENDING',
-    statusLabel: '미처리',
-    createdAt: '2026-04-08T15:42:00',
-    isNew: false,
-  },
-  {
-    reportId: 3,
-    contentType: 'QUESTION',
-    contentTypeLabel: '질문 답변',
-    content: '매우매우나쁜말',
-    authorId: 19,
-    reason: '광고 또는 스팸 글이에요',
-    totalReportCount: 4,
-    status: 'SANCTION_COMPLETED',
-    statusLabel: '제재완료',
-    createdAt: '2026-04-08T11:18:00',
-    isNew: false,
-  },
-  {
-    reportId: 4,
-    contentType: 'LETTER',
-    contentTypeLabel: '편지',
-    content: '부적절한 편지 내용',
-    authorId: 51,
-    reason: '부적절한 내용을 담고 있어요',
-    totalReportCount: 1,
-    status: 'REJECTED',
-    statusLabel: '반려',
-    createdAt: '2026-04-07T09:30:00',
-    isNew: false,
-  },
-];
+import { publicAPI } from '@/shared/api/apiInstance';
 
-const REPORT_DETAIL_MAP = {
-  1: {
-    reportGroupId: 1,
-    contentType: 'LETTER',
-    contentTypeLabel: '편지',
-    targetContentId: 2001,
-    targetContentIdLabel: '편지 ID',
-    totalReportCount: 1,
-    originalContent: '진짜 레전드나쁜말',
-    memo: '',
-    reports: [
-      {
-        reportId: 1,
-        reason: '비속어 또는 모욕적인 표현이 있어요',
-        reporterNickname: '에고북9490',
-        detailReason: '욕설이 포함되어 있습니다',
-        createdAt: '2026-04-09T10:23:00',
-        status: 'PENDING',
-        statusLabel: 'PENDING',
-      },
-    ],
-  },
-  2: {
-    reportGroupId: 2,
-    contentType: 'REPLY',
-    contentTypeLabel: '답장',
-    targetContentId: 2034,
-    targetContentIdLabel: '답장 ID',
-    totalReportCount: 1,
-    originalContent: '평범한말',
-    memo: '',
-    reports: [
-      {
-        reportId: 2,
-        reason: '비속어 또는 모욕적인 표현이 있어요',
-        reporterNickname: '에고북8614',
-        detailReason: '부적절한 표현이 있어요',
-        createdAt: '2026-04-08T15:42:00',
-        status: 'PENDING',
-        statusLabel: 'PENDING',
-      },
-    ],
-  },
-  3: {
-    reportGroupId: 3,
-    contentType: 'QUESTION',
-    contentTypeLabel: '질문 답변',
-    targetContentId: 1,
-    targetContentIdLabel: '답변 ID',
-    totalReportCount: 4,
-    originalContent: '매우매우나쁜말',
-    memo: '',
-    reports: [
-      {
-        reportId: 1,
-        reason: '비속어 또는 모욕적인 표현이 있어요',
-        reporterNickname: '에고북9490',
-        detailReason: '욕설이 포함되어 있습니다',
-        createdAt: '2026-04-08T14:59:37',
-        status: 'PENDING',
-        statusLabel: 'PENDING',
-      },
-      {
-        reportId: 2,
-        reason: '비속어 또는 모욕적인 표현이 있어요',
-        reporterNickname: '에고북8614',
-        detailReason: '부적절한 표현이 있어요',
-        createdAt: '2026-04-08T14:59:37',
-        status: 'PENDING',
-        statusLabel: 'PENDING',
-      },
-      {
-        reportId: 3,
-        reason: '비속어 또는 모욕적인 표현이 있어요',
-        reporterNickname: '에고북8614',
-        detailReason: '부적절한 표현이 있어요',
-        createdAt: '2026-04-08T14:59:37',
-        status: 'RESOLVED',
-        statusLabel: 'RESOLVED',
-      },
-      {
-        reportId: 4,
-        reason: '비속어 또는 모욕적인 표현이 있어요',
-        reporterNickname: '에고북8614',
-        detailReason: '부적절한 표현이 있어요',
-        createdAt: '2026-04-08T14:59:37',
-        status: 'RESOLVED',
-        statusLabel: 'RESOLVED',
-      },
-    ],
-  },
-  4: {
-    reportGroupId: 4,
-    contentType: 'LETTER',
-    contentTypeLabel: '편지',
-    targetContentId: 2002,
-    targetContentIdLabel: '편지 ID',
-    totalReportCount: 1,
-    originalContent: '부적절한 편지 내용',
-    memo: '',
-    reports: [
-      {
-        reportId: 4,
-        reason: '부적절한 내용을 담고 있어요',
-        reporterNickname: '에고북1122',
-        detailReason: '부적절한 내용을 담고 있어요',
-        createdAt: '2026-04-07T09:30:00',
-        status: 'REFUSED',
-        statusLabel: 'REFUSED',
-      },
-    ],
-  },
+const unwrap = (response) => response.data?.data ?? response.data?.result ?? response.data;
+
+const REASON_LABEL = {
+  ABUSE: '비속어 또는 모욕적인 표현이 있어요',
+  SPAM: '광고 또는 스팸 글이에요',
+  INAPPROPRIATE: '부적절한 내용을 담고 있어요',
+  OTHER: '기타',
 };
 
-export async function getReportList({ contentType = 'ALL', status = 'ALL', sort = 'LATEST' }) {
-  await new Promise((resolve) => setTimeout(resolve, 150));
+const STATUS_LABEL = {
+  PENDING: '미처리',
+  SANCTION_COMPLETED: '제재완료',
+  REJECTED: '반려',
+  RESOLVED: '처리완료',
+  REFUSED: '반려',
+};
 
-  let filtered = [...REPORT_LIST];
+function normalizeLetterItem(item) {
+  return {
+    reportId: item.reportId,
+    contentType: 'LETTER',
+    contentTypeLabel: '편지',
+    content: item.letterContent,
+    authorId: item.reporterId,
+    reason: REASON_LABEL[item.reason] ?? item.reason,
+    totalReportCount: item.reportCount,
+    status: item.status ?? 'PENDING',
+    statusLabel: STATUS_LABEL[item.status] ?? item.status ?? '미처리',
+    createdAt: item.createdAt,
+    contentId: item.letterId,
+  };
+}
 
-  if (contentType !== 'ALL') {
-    filtered = filtered.filter((item) => item.contentType === contentType);
+function normalizeReplyItem(item) {
+  return {
+    reportId: item.reportId,
+    contentType: 'REPLY',
+    contentTypeLabel: '편지 답장',
+    content: item.replyContent,
+    authorId: item.reporterId,
+    reason: REASON_LABEL[item.reason] ?? item.reason,
+    totalReportCount: item.reportCount,
+    status: item.status ?? 'PENDING',
+    statusLabel: STATUS_LABEL[item.status] ?? item.status ?? '미처리',
+    createdAt: item.createdAt,
+    contentId: item.replyId,
+  };
+}
+
+function normalizeAnswerItem(item) {
+  return {
+    reportId: item.reportId,
+    contentType: 'ANSWER',
+    contentTypeLabel: '질문 답변',
+    content: item.answerContent,
+    authorId: item.reporterId,
+    reason: REASON_LABEL[item.reason] ?? item.reason,
+    totalReportCount: item.reportCount,
+    status: item.status ?? 'PENDING',
+    statusLabel: STATUS_LABEL[item.status] ?? item.status ?? '미처리',
+    createdAt: item.reportedAt,
+    contentId: item.answerId,
+  };
+}
+
+export async function getReportList({ contentType = 'ALL', page = 1, size = 20 } = {}) {
+  const params = { page, size };
+
+  if (contentType === 'LETTER') {
+    const res = await publicAPI.get('/admin/reports/letters', { params });
+    const raw = unwrap(res);
+    return { content: (raw.content ?? []).map(normalizeLetterItem), hasNext: raw.hasNext ?? false };
   }
 
-  if (status !== 'ALL') {
-    filtered = filtered.filter((item) => item.status === status);
+  if (contentType === 'REPLY') {
+    const res = await publicAPI.get('/admin/reports/replies', { params });
+    const raw = unwrap(res);
+    return { content: (raw.content ?? []).map(normalizeReplyItem), hasNext: raw.hasNext ?? false };
   }
 
-  if (sort === 'LATEST') {
-    filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  if (contentType === 'ANSWER') {
+    const res = await publicAPI.get('/admin/reports/answers', { params });
+    const raw = unwrap(res);
+    return { content: (raw.content ?? []).map(normalizeAnswerItem), hasNext: raw.hasNext ?? false };
   }
 
-  if (sort === 'REPORT_COUNT') {
-    filtered.sort((a, b) => b.totalReportCount - a.totalReportCount);
+  // ALL: 세 엔드포인트 병렬 조회 후 최신순 병합
+  const [letterRes, replyRes, answerRes] = await Promise.all([
+    publicAPI.get('/admin/reports/letters', { params }),
+    publicAPI.get('/admin/reports/replies', { params }),
+    publicAPI.get('/admin/reports/answers', { params }),
+  ]);
+
+  const letters = (unwrap(letterRes).content ?? []).map(normalizeLetterItem);
+  const replies = (unwrap(replyRes).content ?? []).map(normalizeReplyItem);
+  const answers = (unwrap(answerRes).content ?? []).map(normalizeAnswerItem);
+
+  const merged = [...letters, ...replies, ...answers].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+  );
+
+  const hasNext =
+    (unwrap(letterRes).hasNext ?? false) ||
+    (unwrap(replyRes).hasNext ?? false) ||
+    (unwrap(answerRes).hasNext ?? false);
+
+  return { content: merged, hasNext };
+}
+
+export async function getReportDetail(contentType, reportId) {
+  let res;
+  let normalizer;
+
+  if (contentType === 'LETTER') {
+    res = await publicAPI.get(`/admin/reports/letters/${reportId}`);
+    normalizer = (raw) => ({
+      reportGroupId: raw.reportId,
+      contentType: 'LETTER',
+      contentTypeLabel: '편지',
+      targetContentId: raw.letterId,
+      targetContentIdLabel: '편지 ID',
+      contentId: raw.letterId,
+      totalReportCount: raw.reportCount,
+      originalContent: raw.letterContent,
+      memo: '',
+      reports: [{ reportId: raw.reportId, reason: REASON_LABEL[raw.reason] ?? raw.reason, description: raw.description, reporterId: raw.reporterId, createdAt: raw.createdAt, status: raw.status ?? 'PENDING', statusLabel: STATUS_LABEL[raw.status] ?? '미처리' }],
+    });
+  } else if (contentType === 'REPLY') {
+    res = await publicAPI.get(`/admin/reports/replies/${reportId}`);
+    normalizer = (raw) => ({
+      reportGroupId: raw.reportId,
+      contentType: 'REPLY',
+      contentTypeLabel: '편지 답장',
+      targetContentId: raw.replyId,
+      targetContentIdLabel: '답장 ID',
+      contentId: raw.replyId,
+      totalReportCount: raw.reportCount,
+      originalContent: raw.replyContent,
+      memo: '',
+      reports: [{ reportId: raw.reportId, reason: REASON_LABEL[raw.reason] ?? raw.reason, description: raw.description, reporterId: raw.reporterId, createdAt: raw.createdAt, status: raw.status ?? 'PENDING', statusLabel: STATUS_LABEL[raw.status] ?? '미처리' }],
+    });
+  } else if (contentType === 'ANSWER') {
+    res = await publicAPI.get(`/admin/reports/answers/${reportId}`);
+    normalizer = (raw) => ({
+      reportGroupId: raw.reportId,
+      contentType: 'ANSWER',
+      contentTypeLabel: '질문 답변',
+      targetContentId: raw.answerId,
+      targetContentIdLabel: '답변 ID',
+      contentId: raw.answerId,
+      totalReportCount: raw.reportCount,
+      originalContent: raw.answerContent,
+      memo: '',
+      reports: [{ reportId: raw.reportId, reason: REASON_LABEL[raw.reason] ?? raw.reason, description: raw.description, reporterId: raw.reporterNickname ?? raw.reporterId, createdAt: raw.reportedAt, status: raw.status ?? 'PENDING', statusLabel: STATUS_LABEL[raw.status] ?? '미처리' }],
+    });
+  } else {
+    return null;
   }
 
-  return filtered;
+  return normalizer(unwrap(res));
 }
 
-export async function getReportDetail(reportId) {
-  await new Promise((resolve) => setTimeout(resolve, 150));
-
-  return REPORT_DETAIL_MAP[Number(reportId)] ?? null;
+export async function deleteReportedContent({ contentType, contentId }) {
+  if (contentType === 'LETTER') {
+    await publicAPI.delete(`/admin/reports/letters/${contentId}`);
+  } else if (contentType === 'REPLY') {
+    await publicAPI.delete(`/admin/reports/replies/${contentId}`);
+  } else if (contentType === 'ANSWER') {
+    await publicAPI.delete(`/admin/reports/answers/${contentId}`);
+  }
 }
 
-export async function updateReportStatus({ reportId, status }) {
-  await new Promise((resolve) => setTimeout(resolve, 150));
-
-  return {
-    success: true,
-    reportId,
-    status,
-  };
-}
-
-export async function rejectReportGroup({ reportGroupId, reason }) {
-  await new Promise((resolve) => setTimeout(resolve, 150));
-
-  return {
-    success: true,
-    reportGroupId,
-    reason,
-  };
-}
-
-export async function applyReportSanction({ reportGroupId, days, reason }) {
-  await new Promise((resolve) => setTimeout(resolve, 150));
-
-  return {
-    success: true,
-    reportGroupId,
-    days,
-    reason,
-  };
-}
-
-export async function deleteReportedContent({ reportGroupId }) {
-  await new Promise((resolve) => setTimeout(resolve, 150));
-
-  return {
-    success: true,
-    reportGroupId,
-  };
-}
-
-export async function saveReportMemo({ reportGroupId, memo }) {
-  await new Promise((resolve) => setTimeout(resolve, 150));
-
-  return {
-    success: true,
-    reportGroupId,
-    memo,
-  };
-}
+// 아직 스펙 미제공 — 추후 연동
+export async function updateReportStatus() {}
+export async function rejectReportGroup() {}
+export async function applyReportSanction() {}
+export async function saveReportMemo() {}
