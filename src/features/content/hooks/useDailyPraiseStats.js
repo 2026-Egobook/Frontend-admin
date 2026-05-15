@@ -15,6 +15,6 @@ export default function useDailyPraiseStats({ startDate, endDate }) {
   return useQuery({
     queryKey: ['dailyPraiseStats', start, end],
     queryFn: () => getDailyPraiseStats({ startDate: start, endDate: end }),
-    enabled: !!start && !!end,
+    enabled: !!start && !!end && start <= end,
   });
 }

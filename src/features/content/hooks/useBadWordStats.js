@@ -15,6 +15,6 @@ export default function useBadWordStats({ startDate, endDate, type = 'ALL' }) {
   return useQuery({
     queryKey: ['badWordStats', start, end, type],
     queryFn: () => getBadWordStats({ startDate: start, endDate: end, type }),
-    enabled: !!start && !!end,
+    enabled: !!start && !!end && start <= end,
   });
 }

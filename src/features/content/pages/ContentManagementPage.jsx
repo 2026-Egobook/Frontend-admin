@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import ContentTabMenu from '../components/common/ContentTabMenu';
 import DailyPraiseSection from '../components/daily-praise/DailyPraiseSection';
 import WeeklyReportSection from '../components/weekly-report/WeeklyReportSection';
@@ -11,7 +12,8 @@ import useBadWordStats from '../hooks/useBadWordStats';
 import { resendDailyPraiseFailures, resendWeeklyReportFailures } from '../api/contentApi';
 
 export default function ContentManagementPage() {
-  const [activeTab, setActiveTab] = useState('weeklyReport');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') ?? 'weeklyReport';
   const [startDate, setStartDate] = useState(new Date('2026-04-01'));
   const [endDate, setEndDate] = useState(new Date('2026-04-09'));
 
@@ -55,7 +57,7 @@ export default function ContentManagementPage() {
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold leading-8 text-neutral-950">콘텐츠 관리</h1>
 
-      <ContentTabMenu activeTab={activeTab} onChange={setActiveTab} />
+      <ContentTabMenu activeTab={activeTab} onChange={(tab) => setSearchParams({ tab })} />
 
       {activeTab === 'dailyPraise' && (
         <>

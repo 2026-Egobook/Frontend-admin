@@ -15,6 +15,6 @@ export default function useWeeklyReportStats({ startDate, endDate }) {
   return useQuery({
     queryKey: ['weeklyReportStats', start, end],
     queryFn: () => getWeeklyReportStats({ startDate: start, endDate: end }),
-    enabled: !!start && !!end,
+    enabled: !!start && !!end && start <= end,
   });
 }

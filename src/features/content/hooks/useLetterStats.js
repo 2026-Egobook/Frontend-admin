@@ -15,6 +15,6 @@ export default function useLetterStats({ startDate, endDate }) {
   return useQuery({
     queryKey: ['letterStats', start, end],
     queryFn: () => getLetterStats({ startDate: start, endDate: end }),
-    enabled: !!start && !!end,
+    enabled: !!start && !!end && start <= end,
   });
 }
