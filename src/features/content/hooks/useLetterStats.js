@@ -3,21 +3,18 @@ import { getLetterStats } from '../api/contentApi';
 
 function formatDate(date) {
   if (!date) return '';
-
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
-
   return `${year}-${month}-${day}`;
 }
 
 export default function useLetterStats({ startDate, endDate }) {
+  const start = formatDate(startDate);
+  const end = formatDate(endDate);
   return useQuery({
-    queryKey: ['letterStats', formatDate(startDate), formatDate(endDate)],
-    queryFn: () =>
-      getLetterStats({
-        startDate: formatDate(startDate),
-        endDate: formatDate(endDate),
-      }),
+    queryKey: ['letterStats', start, end],
+    queryFn: () => getLetterStats({ startDate: start, endDate: end }),
+    enabled: !!start && !!end,
   });
 }
