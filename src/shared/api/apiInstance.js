@@ -29,7 +29,7 @@ publicAPI.interceptors.response.use(
 
       if (!refreshToken) {
         tokenStorage.clearTokens();
-        window.location.href = '/login';
+        window.location.href = '/admin/login';
         return Promise.reject(error);
       }
 
@@ -40,12 +40,13 @@ publicAPI.interceptors.response.use(
           { headers: { 'Content-Type': 'application/json' } },
         );
 
-        tokenStorage.setTokens(data.accessToken, data.refreshToken ?? refreshToken);
-        originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+        const tokens = data.data ?? data;
+        tokenStorage.setTokens(tokens.accessToken, tokens.refreshToken ?? refreshToken);
+        originalRequest.headers.Authorization = `Bearer ${tokens.accessToken}`;
         return publicAPI(originalRequest);
       } catch {
         tokenStorage.clearTokens();
-        window.location.href = '/login';
+        window.location.href = '/admin/login';
         return Promise.reject(error);
       }
     }

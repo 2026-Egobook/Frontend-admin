@@ -1,14 +1,14 @@
 export const PATH = {
-  LOGIN: '/login',
+  LOGIN: '/admin/login',
 
-  MEMBER_LIST: '/members',
-  MEMBER_DETAIL: '/members/:memberId',
+  MEMBER_LIST: '/admin/members',
+  MEMBER_DETAIL: '/admin/members/:memberId',
 
-  CONTENT: '/contents',
+  CONTENT: '/admin/contents',
 
-  REPORT_LIST: '/reports',
-  REPORT_DETAIL: '/reports/:contentType/:reportId',
+  REPORT_LIST: '/admin/reports',
+  REPORT_DETAIL: '/admin/reports/:contentType/:reportId',
 
-  CRUD: '/crud',
-  STATS: '/stats',
+  CRUD: '/admin/crud',
+  STATS: '/admin/stats',
 };

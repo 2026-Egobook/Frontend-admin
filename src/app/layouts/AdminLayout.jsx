@@ -1,36 +1,17 @@
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { FiUsers, FiFileText, FiAlertCircle, FiDatabase, FiBarChart2 } from 'react-icons/fi';
+import { PATH } from '../routes/path';
 
 function AdminLayout() {
   const location = useLocation();
   const navigate = useNavigate();
 
   const menus = [
-    {
-      label: '회원 관리',
-      path: '/members',
-      icon: FiUsers,
-    },
-    {
-      label: '콘텐츠 관리',
-      path: '/contents',
-      icon: FiFileText,
-    },
-    {
-      label: '신고 관리',
-      path: '/reports',
-      icon: FiAlertCircle,
-    },
-    {
-      label: 'CRUD 관리',
-      path: '/crud',
-      icon: FiDatabase,
-    },
-    {
-      label: '통계',
-      path: '/stats',
-      icon: FiBarChart2,
-    },
+    { label: '회원 관리', path: PATH.MEMBER_LIST, icon: FiUsers },
+    { label: '콘텐츠 관리', path: PATH.CONTENT, icon: FiFileText },
+    { label: '신고 관리', path: PATH.REPORT_LIST, icon: FiAlertCircle },
+    { label: 'CRUD 관리', path: PATH.CRUD, icon: FiDatabase },
+    { label: '통계', path: PATH.STATS, icon: FiBarChart2 },
   ];
 
   const isActiveMenu = (path) => location.pathname.startsWith(path);
