@@ -11,6 +11,6 @@ export async function registerAdmin({ adminId, password }) {
 }
 
 export async function reissueToken({ accessToken, refreshToken }) {
-  const { data } = await publicAPI.post('/admin/auth/reissue', { accessToken, refreshToken });
+  const { data } = await publicAPI.post('/admin/auth/refresh', { accessToken, refreshToken });
   return data;
 }

@@ -35,7 +35,7 @@ publicAPI.interceptors.response.use(
 
       try {
         const { data } = await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL || ''}/admin/auth/reissue`,
+          `${import.meta.env.VITE_API_BASE_URL || ''}/admin/auth/refresh`,
           { accessToken, refreshToken },
           { headers: { 'Content-Type': 'application/json' } },
         );

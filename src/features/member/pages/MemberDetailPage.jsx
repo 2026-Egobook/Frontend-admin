@@ -34,9 +34,11 @@ export default function MemberDetailPage() {
   const { data: stats, isLoading: statsLoading } = useMemberStats(memberId);
 
   const [reportPage, setReportPage] = useState(1);
+  const [reportDomainType, setReportDomainType] = useState('LETTER');
   const [reportType, setReportType] = useState(null);
   const { data: reportData, isLoading: reportLoading } = useMemberReportHistory({
     userId: memberId,
+    reportDomainType,
     reportType,
     page: reportPage,
     size: 10,
@@ -113,9 +115,14 @@ export default function MemberDetailPage() {
             reports={reportData?.reportList?.content ?? []}
             hasNext={reportData?.reportList?.hasNext ?? false}
             page={reportPage}
+            reportDomainType={reportDomainType}
             reportType={reportType}
             isLoading={reportLoading}
             onPageChange={setReportPage}
+            onReportDomainTypeChange={(type) => {
+              setReportDomainType(type);
+              setReportPage(1);
+            }}
             onReportTypeChange={(type) => {
               setReportType(type);
               setReportPage(1);

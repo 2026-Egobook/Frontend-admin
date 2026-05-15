@@ -69,9 +69,11 @@ export default function ReportHistorySection({
   reports = [],
   hasNext = false,
   page = 1,
+  reportDomainType,
   reportType,
   isLoading,
   onPageChange,
+  onReportDomainTypeChange,
   onReportTypeChange,
 }) {
   return (
@@ -101,28 +103,53 @@ export default function ReportHistorySection({
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <div className="text-sm font-medium leading-5 text-neutral-950">필터</div>
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
+          <div className="text-sm font-medium leading-5 text-neutral-950">도메인</div>
+          <div className="flex gap-2">
+            {[
+              { label: '편지', value: 'LETTER' },
+              { label: '편지 답장', value: 'LETTER_REPLY' },
+              { label: '질문 답변', value: 'QUESTION_ANSWER' },
+            ].map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => onReportDomainTypeChange?.(option.value)}
+                className={`rounded px-4 py-2 text-sm font-medium ${
+                  reportDomainType === option.value
+                    ? 'bg-black text-white'
+                    : 'border border-neutral-300 bg-white text-neutral-700'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
-        <div className="flex gap-2">
-          {[
-            { label: '전체', value: null },
-            { label: '신고받음', value: 'REPORTED' },
-            { label: '신고함', value: 'REPORTER' },
-          ].map((option) => (
-            <button
-              key={String(option.value)}
-              type="button"
-              onClick={() => onReportTypeChange?.(option.value)}
-              className={`rounded px-4 py-2 text-sm font-medium ${
-                reportType === option.value
-                  ? 'bg-black text-white'
-                  : 'border border-neutral-300 bg-white text-neutral-700'
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
+        <div className="flex flex-col gap-2">
+          <div className="text-sm font-medium leading-5 text-neutral-950">신고 유형</div>
+          <div className="flex gap-2">
+            {[
+              { label: '전체', value: null },
+              { label: '신고받음', value: 'REPORTED' },
+              { label: '신고함', value: 'REPORTER' },
+            ].map((option) => (
+              <button
+                key={String(option.value)}
+                type="button"
+                onClick={() => onReportTypeChange?.(option.value)}
+                className={`rounded px-4 py-2 text-sm font-medium ${
+                  reportType === option.value
+                    ? 'bg-black text-white'
+                    : 'border border-neutral-300 bg-white text-neutral-700'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
