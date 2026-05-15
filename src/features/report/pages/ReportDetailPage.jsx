@@ -2,63 +2,20 @@ import { useState } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import { useNavigate, useParams } from 'react-router-dom';
 import useReportDetail from '../hooks/useReportDetail';
-import {
-  useApplyReportSanction,
-  useDeleteReportedContent,
-  useRejectReportGroup,
-  useSaveReportMemo,
-  useUpdateReportStatus,
-} from '../hooks/useReportActions';
+import { useDeleteReportedContent } from '../hooks/useReportActions';
 import ReportDetailHeader from '../components/ReportDetailHeader';
 import ReportHistoryList from '../components/ReportHistoryList';
 import ReportMemoForm from '../components/ReportMemoForm';
 import ContentDeleteModal from '../components/ContentDeleteModal';
-import RejectReportModal from '../components/RejectReportModal';
-import SanctionProcessModal from '../components/SanctionProcessModal';
-import ReportStatusChangeModal from '../components/ReportStatusChangeModal';
 
 export default function ReportDetailPage() {
   const navigate = useNavigate();
-  const { reportId } = useParams();
+  const { contentType, reportId } = useParams();
 
-  const { data: detail, isLoading } = useReportDetail(reportId);
-
-  const updateReportStatusMutation = useUpdateReportStatus(reportId);
-  const rejectReportMutation = useRejectReportGroup(reportId);
-  const applySanctionMutation = useApplyReportSanction(reportId);
+  const { data: detail, isLoading } = useReportDetail(contentType, reportId);
   const deleteContentMutation = useDeleteReportedContent(reportId);
-  const saveMemoMutation = useSaveReportMemo(reportId);
 
-  const [selectedReport, setSelectedReport] = useState(null);
-  const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [rejectModalOpen, setRejectModalOpen] = useState(false);
-  const [sanctionModalOpen, setSanctionModalOpen] = useState(false);
-
-  const handleOpenStatusModal = (report) => {
-    setSelectedReport(report);
-    setStatusModalOpen(true);
-  };
-
-  const handleResolve = async () => {
-    await updateReportStatusMutation.mutateAsync({
-      reportId: selectedReport.reportId,
-      status: 'RESOLVED',
-    });
-
-    setStatusModalOpen(false);
-    setSelectedReport(null);
-  };
-
-  const handleRefuse = async () => {
-    await updateReportStatusMutation.mutateAsync({
-      reportId: selectedReport.reportId,
-      status: 'REFUSED',
-    });
-
-    setStatusModalOpen(false);
-    setSelectedReport(null);
-  };
 
   if (isLoading) {
     return (
@@ -109,34 +66,12 @@ export default function ReportDetailPage() {
               >
                 콘텐츠 삭제
               </button>
-              <button
-                type="button"
-                onClick={() => setRejectModalOpen(true)}
-                className="h-10 rounded border border-neutral-300 bg-white px-4 text-base font-medium text-neutral-950"
-              >
-                신고 반려
-              </button>
-              <button
-                type="button"
-                onClick={() => setSanctionModalOpen(true)}
-                className="h-10 rounded bg-black px-4 text-base font-medium text-white"
-              >
-                제재 처리
-              </button>
             </div>
           </section>
 
-          <ReportHistoryList reports={detail.reports} onProcess={handleOpenStatusModal} />
+          <ReportHistoryList reports={detail.reports} />
 
-          <ReportMemoForm
-            initialMemo={detail.memo}
-            onSave={(memo) =>
-              saveMemoMutation.mutate({
-                reportGroupId: detail.reportGroupId,
-                memo,
-              })
-            }
-          />
+          <ReportMemoForm initialMemo={detail.memo} onSave={() => {}} />
         </div>
       </div>
 
@@ -145,46 +80,12 @@ export default function ReportDetailPage() {
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={async () => {
           await deleteContentMutation.mutateAsync({
-            reportGroupId: detail.reportGroupId,
+            contentType: detail.contentType,
+            contentId: detail.contentId,
           });
           setDeleteModalOpen(false);
+          navigate(-1);
         }}
-      />
-
-      <RejectReportModal
-        open={rejectModalOpen}
-        onClose={() => setRejectModalOpen(false)}
-        onSubmit={async ({ reason }) => {
-          await rejectReportMutation.mutateAsync({
-            reportGroupId: detail.reportGroupId,
-            reason,
-          });
-          setRejectModalOpen(false);
-        }}
-      />
-
-      <SanctionProcessModal
-        open={sanctionModalOpen}
-        onClose={() => setSanctionModalOpen(false)}
-        onSubmit={async ({ days, reason }) => {
-          await applySanctionMutation.mutateAsync({
-            reportGroupId: detail.reportGroupId,
-            days,
-            reason,
-          });
-          setSanctionModalOpen(false);
-        }}
-      />
-
-      <ReportStatusChangeModal
-        open={statusModalOpen}
-        report={selectedReport}
-        onClose={() => {
-          setStatusModalOpen(false);
-          setSelectedReport(null);
-        }}
-        onResolve={handleResolve}
-        onRefuse={handleRefuse}
       />
     </>
   );

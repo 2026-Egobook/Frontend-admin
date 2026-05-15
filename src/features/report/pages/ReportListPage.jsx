@@ -5,14 +5,18 @@ import useReportList from '../hooks/useReportList';
 
 export default function ReportListPage() {
   const [contentType, setContentType] = useState('ALL');
-  const [status, setStatus] = useState('ALL');
-  const [sort, setSort] = useState('LATEST');
+  const [page, setPage] = useState(1);
+  const size = 20;
 
-  const { data: reports = [], isLoading } = useReportList({
-    contentType,
-    status,
-    sort,
-  });
+  const { data, isLoading } = useReportList({ contentType, page, size });
+
+  const reports = data?.content ?? [];
+  const hasNext = data?.hasNext ?? false;
+
+  const handleContentTypeChange = (value) => {
+    setContentType(value);
+    setPage(1);
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -20,11 +24,7 @@ export default function ReportListPage() {
 
       <ReportFilterPanel
         contentType={contentType}
-        status={status}
-        sort={sort}
-        onChangeContentType={setContentType}
-        onChangeStatus={setStatus}
-        onChangeSort={setSort}
+        onChangeContentType={handleContentTypeChange}
       />
 
       {isLoading ? (
@@ -34,6 +34,26 @@ export default function ReportListPage() {
       ) : (
         <ReportTable reports={reports} />
       )}
+
+      <div className="flex items-center justify-center gap-2">
+        <button
+          type="button"
+          onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+          disabled={page === 1}
+          className="rounded border border-neutral-300 px-3 py-1.5 text-sm text-neutral-700 disabled:cursor-not-allowed disabled:text-neutral-300"
+        >
+          이전
+        </button>
+        <span className="text-sm text-neutral-600">{page} 페이지</span>
+        <button
+          type="button"
+          onClick={() => setPage((prev) => prev + 1)}
+          disabled={!hasNext}
+          className="rounded border border-neutral-300 px-3 py-1.5 text-sm text-neutral-700 disabled:cursor-not-allowed disabled:text-neutral-300"
+        >
+          다음
+        </button>
+      </div>
     </div>
   );
 }

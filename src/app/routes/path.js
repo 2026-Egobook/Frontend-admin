@@ -7,7 +7,7 @@ export const PATH = {
   CONTENT: '/contents',
 
   REPORT_LIST: '/reports',
-  REPORT_DETAIL: '/reports/:reportId',
+  REPORT_DETAIL: '/reports/:contentType/:reportId',
 
   CRUD: '/crud',
   STATS: '/stats',
