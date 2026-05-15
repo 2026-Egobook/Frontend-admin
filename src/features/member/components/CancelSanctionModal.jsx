@@ -2,21 +2,21 @@ import { useState } from 'react';
 import BaseModal from '@/shared/components/ui/BaseModal';
 import DropdownSelect from '@/shared/components/ui/DropdownSelect';
 
-export default function CancelSanctionModal({ open, onClose, domains = [], onSubmit }) {
-  const [domain, setDomain] = useState('');
+export default function CancelSanctionModal({ open, onClose, activeRestrictions = [], onSubmit }) {
+  const [restrictionId, setRestrictionId] = useState('');
 
-  const hasActiveSanction = domains.length > 0;
+  const hasActiveRestriction = activeRestrictions.length > 0;
 
   const handleClose = () => {
-    setDomain('');
+    setRestrictionId('');
     onClose?.();
   };
 
   const handleSubmit = () => {
-    if (!domain) return;
+    if (!restrictionId) return;
 
-    onSubmit?.({ domain });
-    setDomain('');
+    onSubmit?.(restrictionId);
+    setRestrictionId('');
   };
 
   return (
@@ -24,7 +24,7 @@ export default function CancelSanctionModal({ open, onClose, domains = [], onSub
       <div className="flex flex-col gap-4 px-6 py-6">
         <h3 className="text-lg font-semibold leading-7 text-neutral-950">제재 취소 확인</h3>
 
-        {!hasActiveSanction ? (
+        {!hasActiveRestriction ? (
           <div className="text-sm font-normal leading-5 text-neutral-600">
             적용 중인 제재가 없습니다
           </div>
@@ -35,13 +35,13 @@ export default function CancelSanctionModal({ open, onClose, domains = [], onSub
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium leading-5 text-neutral-950">제재 도메인</label>
+              <label className="text-sm font-medium leading-5 text-neutral-950">제재 선택</label>
 
               <DropdownSelect
-                value={domain}
+                value={restrictionId}
                 placeholder="선택하기"
-                options={domains}
-                onChange={setDomain}
+                options={activeRestrictions}
+                onChange={setRestrictionId}
               />
             </div>
 
@@ -49,7 +49,7 @@ export default function CancelSanctionModal({ open, onClose, domains = [], onSub
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={!domain}
+                disabled={!restrictionId}
                 className="flex-1 rounded bg-black px-4 py-2.5 text-base font-medium text-white disabled:cursor-not-allowed disabled:bg-neutral-300"
               >
                 확인

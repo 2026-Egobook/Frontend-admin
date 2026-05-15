@@ -1,13 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { cancelMemberSanction } from '../api/memberApi';
+import { cancelMemberRestriction } from '../api/memberApi';
 
-export function useCancelMemberSanction(memberId) {
+export function useCancelMemberSanction(userId) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: cancelMemberSanction,
+    mutationFn: cancelMemberRestriction,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['memberDetail', memberId] });
+      queryClient.invalidateQueries({ queryKey: ['memberRestrictions', userId] });
     },
   });
 }

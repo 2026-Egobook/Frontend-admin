@@ -5,78 +5,76 @@ import MemberSummaryCard from '../components/MemberSummaryCard';
 import ReportHistorySection from '../components/ReportHistorySection';
 import SanctionHistorySection from '../components/SanctionHistorySection';
 import SanctionActionButtons from '../components/SanctionActionButtons';
-import ReportStatusModal from '../components/ReportStatusModal';
 import ApplySanctionModal from '../components/ApplySanctionModal';
 import CancelSanctionModal from '../components/CancelSanctionModal';
 import { useMemberDetail } from '../hooks/useMemberDetail';
-import { useUpdateReportStatus } from '../hooks/useUpdateReportStatus';
+import { useMemberStats } from '../hooks/useMemberStats';
+import { useMemberReportHistory } from '../hooks/useMemberReportHistory';
+import { useMemberRestrictions } from '../hooks/useMemberRestrictions';
 import { useApplyMemberSanction } from '../hooks/useApplyMemberSanction';
 import { useCancelMemberSanction } from '../hooks/useCancelMemberSanction';
+
+const DOMAIN_TYPE_LABEL = {
+  LETTER: '편지',
+  QUESTION_ANSWER: '질문 답변',
+};
+
+const REASON_LABEL = {
+  ABUSE: '비속어 및 모욕',
+  SPAM: '광고 및 스팸',
+  INAPPROPRIATE: '부적절한 콘텐츠',
+  OTHER: '기타',
+};
 
 export default function MemberDetailPage() {
   const navigate = useNavigate();
   const { memberId } = useParams();
 
-  const { data: member, isLoading } = useMemberDetail(memberId);
-  const updateReportStatusMutation = useUpdateReportStatus(memberId);
+  const { data: member, isLoading: memberLoading } = useMemberDetail(memberId);
+  const { data: stats, isLoading: statsLoading } = useMemberStats(memberId);
+
+  const [reportPage, setReportPage] = useState(1);
+  const [reportDomainType, setReportDomainType] = useState('LETTER');
+  const [reportType, setReportType] = useState(null);
+  const { data: reportData, isLoading: reportLoading } = useMemberReportHistory({
+    userId: memberId,
+    reportDomainType,
+    reportType,
+    page: reportPage,
+    size: 10,
+  });
+
+  const { data: restrictionData, isLoading: restrictionLoading } = useMemberRestrictions({
+    userId: memberId,
+    page: 1,
+    size: 50,
+  });
+
   const applySanctionMutation = useApplyMemberSanction(memberId);
   const cancelSanctionMutation = useCancelMemberSanction(memberId);
 
-  const [selectedReport, setSelectedReport] = useState(null);
-  const [reportModalOpen, setReportModalOpen] = useState(false);
   const [applyModalOpen, setApplyModalOpen] = useState(false);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
 
-  const handleOpenReportModal = (report) => {
-    setSelectedReport(report);
-    setReportModalOpen(true);
-  };
-
-  const handleResolveReport = async () => {
-    if (!selectedReport) return;
-
-    await updateReportStatusMutation.mutateAsync({
-      memberId,
-      reportId: selectedReport.reportId,
-      status: 'RESOLVED',
-    });
-
-    setReportModalOpen(false);
-    setSelectedReport(null);
-  };
-
-  const handleRefuseReport = async () => {
-    if (!selectedReport) return;
-
-    await updateReportStatusMutation.mutateAsync({
-      memberId,
-      reportId: selectedReport.reportId,
-      status: 'REFUSED',
-    });
-
-    setReportModalOpen(false);
-    setSelectedReport(null);
-  };
-
-  const handleApplySanction = async ({ domain, reason, description }) => {
-    await applySanctionMutation.mutateAsync({
-      memberId,
-      domain,
-      reason,
-      description,
-    });
-
+  const handleApplySanction = async ({ domainType, reason, description }) => {
+    await applySanctionMutation.mutateAsync({ userId: memberId, domainType, reason, description });
     setApplyModalOpen(false);
   };
 
-  const handleCancelSanction = async ({ domain }) => {
-    await cancelSanctionMutation.mutateAsync({
-      memberId,
-      domain,
-    });
-
+  const handleCancelSanction = async (restrictionId) => {
+    await cancelSanctionMutation.mutateAsync(restrictionId);
     setCancelModalOpen(false);
   };
+
+  const restrictions = restrictionData?.content ?? [];
+  const activeRestrictions = restrictions
+    .filter((r) => r.restrictionStatus === 'ACTIVE')
+    .map((r) => ({
+      label: `${DOMAIN_TYPE_LABEL[r.domainType] ?? r.domainType} - ${REASON_LABEL[r.reason] ?? r.reason}`,
+      value: r.restrictionId,
+    }));
+
+  const isLoading = memberLoading || statsLoading;
 
   if (isLoading) {
     return (
@@ -110,16 +108,31 @@ export default function MemberDetailPage() {
         </div>
 
         <div className="flex flex-col gap-6 rounded-[10px] border border-neutral-200 bg-white p-6">
-          <MemberSummaryCard member={member} />
+          <MemberSummaryCard member={member} stats={stats} />
 
           <ReportHistorySection
-            reportSummary={member.reportSummary}
-            reportsReceived={member.reportsReceived}
-            reportsSent={member.reportsSent}
-            onProcessReport={handleOpenReportModal}
+            summary={reportData?.summary}
+            reports={reportData?.reportList?.content ?? []}
+            hasNext={reportData?.reportList?.hasNext ?? false}
+            page={reportPage}
+            reportDomainType={reportDomainType}
+            reportType={reportType}
+            isLoading={reportLoading}
+            onPageChange={setReportPage}
+            onReportDomainTypeChange={(type) => {
+              setReportDomainType(type);
+              setReportPage(1);
+            }}
+            onReportTypeChange={(type) => {
+              setReportType(type);
+              setReportPage(1);
+            }}
           />
 
-          <SanctionHistorySection sanctions={member.sanctions} />
+          <SanctionHistorySection
+            restrictions={restrictions}
+            isLoading={restrictionLoading}
+          />
 
           <SanctionActionButtons
             onOpenApply={() => setApplyModalOpen(true)}
@@ -127,17 +140,6 @@ export default function MemberDetailPage() {
           />
         </div>
       </div>
-
-      <ReportStatusModal
-        open={reportModalOpen}
-        report={selectedReport}
-        onClose={() => {
-          setReportModalOpen(false);
-          setSelectedReport(null);
-        }}
-        onResolve={handleResolveReport}
-        onRefuse={handleRefuseReport}
-      />
 
       <ApplySanctionModal
         open={applyModalOpen}
@@ -148,7 +150,7 @@ export default function MemberDetailPage() {
       <CancelSanctionModal
         open={cancelModalOpen}
         onClose={() => setCancelModalOpen(false)}
-        domains={member.activeSanctionDomains ?? []}
+        activeRestrictions={activeRestrictions}
         onSubmit={handleCancelSanction}
       />
     </>

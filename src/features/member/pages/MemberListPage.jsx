@@ -6,11 +6,23 @@ import { useMemberList } from '../hooks/useMemberList';
 function MemberListPage() {
   const [keyword, setKeyword] = useState('');
   const [status, setStatus] = useState('ALL');
+  const [page, setPage] = useState(1);
+  const size = 5;
 
-  const { data: members = [], isLoading } = useMemberList({
-    keyword,
-    status,
-  });
+  const { data, isLoading } = useMemberList({ keyword, status, page, size });
+
+  const members = data?.content ?? [];
+  const hasNext = data?.hasNext ?? false;
+
+  const handleKeywordChange = (value) => {
+    setKeyword(value);
+    setPage(1);
+  };
+
+  const handleStatusChange = (value) => {
+    setStatus(value);
+    setPage(1);
+  };
 
   return (
     <div className="flex flex-col gap-6 bg-white">
@@ -19,8 +31,8 @@ function MemberListPage() {
       <MemberFilter
         keyword={keyword}
         status={status}
-        onKeywordChange={setKeyword}
-        onStatusChange={setStatus}
+        onKeywordChange={handleKeywordChange}
+        onStatusChange={handleStatusChange}
       />
 
       {isLoading ? (
@@ -30,6 +42,28 @@ function MemberListPage() {
       ) : (
         <MemberTable members={members} />
       )}
+
+      <div className="flex items-center justify-center gap-2">
+        <button
+          type="button"
+          onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+          disabled={page === 1}
+          className="rounded border border-neutral-300 px-3 py-1.5 text-sm text-neutral-700 disabled:cursor-not-allowed disabled:text-neutral-300"
+        >
+          이전
+        </button>
+
+        <span className="text-sm text-neutral-600">{page} 페이지</span>
+
+        <button
+          type="button"
+          onClick={() => setPage((prev) => prev + 1)}
+          disabled={!hasNext}
+          className="rounded border border-neutral-300 px-3 py-1.5 text-sm text-neutral-700 disabled:cursor-not-allowed disabled:text-neutral-300"
+        >
+          다음
+        </button>
+      </div>
     </div>
   );
 }

@@ -31,21 +31,21 @@ export default function MemberTable({ members }) {
           ) : (
             members.map((member, index) => (
               <tr
-                key={`${member.id}-${index}`}
+                key={`${member.userId}-${index}`}
                 className="border-b border-neutral-200 last:border-b-0"
               >
-                <td className="px-12 py-6 text-sm text-neutral-950">{member.id}</td>
+                <td className="px-12 py-6 text-sm text-neutral-950">{member.userId}</td>
                 <td className="px-6 py-6 text-sm text-neutral-950">{member.email || '-'}</td>
                 <td className="px-6 py-6 text-sm text-neutral-950">{member.nickname}</td>
                 <td className="px-6 py-6">
                   <MemberStatusBadge status={member.status} />
                 </td>
                 <td className="px-6 py-6 text-sm text-[#525252]">{member.lastLoginAt}</td>
-                <td className="px-6 py-6 text-sm text-[#525252]">{member.joinedAt}</td>
+                <td className="px-6 py-6 text-sm text-[#525252]">{member.createdAt}</td>
                 <td className="px-6 py-6 text-sm text-black">
                   <button
                     type="button"
-                    onClick={() => navigate(`/members/${member.id}`)}
+                    onClick={() => navigate(`/members/${member.userId}`)}
                     className="hover:underline"
                   >
                     상세보기
