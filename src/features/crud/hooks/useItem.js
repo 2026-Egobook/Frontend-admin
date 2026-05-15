@@ -1,10 +1,24 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createItem, deleteItem, getItemList, updateItem } from '../api/crudApi';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { changeItemStatus, createItem, deleteItem, getItemList, updateItem } from '../api/crudApi';
 
-export function useItemList() {
-  return useQuery({
-    queryKey: ['itemList'],
-    queryFn: getItemList,
+export function useItemList({ size = 20, category } = {}) {
+  return useInfiniteQuery({
+    queryKey: ['itemList', size, category],
+    queryFn: ({ pageParam = 1 }) => getItemList({ page: pageParam, size, category }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.hasNext ? allPages.length + 1 : undefined,
+  });
+}
+
+export function useChangeItemStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, status }) => changeItemStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['itemList'] });
+    },
   });
 }
 

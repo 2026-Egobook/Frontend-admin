@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   createPsychologyKnowledge,
   deletePsychologyKnowledge,
@@ -6,10 +6,13 @@ import {
   updatePsychologyKnowledge,
 } from '../api/crudApi';
 
-export function usePsychologyKnowledgeList() {
-  return useQuery({
-    queryKey: ['psychologyKnowledgeList'],
-    queryFn: getPsychologyKnowledgeList,
+export function usePsychologyKnowledgeList({ size = 20 } = {}) {
+  return useInfiniteQuery({
+    queryKey: ['psychologyKnowledgeList', size],
+    queryFn: ({ pageParam = 1 }) => getPsychologyKnowledgeList({ page: pageParam, size }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.hasNext ? allPages.length + 1 : undefined,
   });
 }
 

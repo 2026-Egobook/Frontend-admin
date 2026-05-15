@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   createQuestionDummy,
   deleteQuestionDummy,
@@ -6,10 +6,13 @@ import {
   updateQuestionDummy,
 } from '../api/crudApi';
 
-export function useQuestionDummyList() {
-  return useQuery({
-    queryKey: ['questionDummyList'],
-    queryFn: getQuestionDummyList,
+export function useQuestionDummyList({ size = 20 } = {}) {
+  return useInfiniteQuery({
+    queryKey: ['questionDummyList', size],
+    queryFn: ({ pageParam = 1 }) => getQuestionDummyList({ page: pageParam, size }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.hasNext ? allPages.length + 1 : undefined,
   });
 }
 

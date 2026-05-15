@@ -8,8 +8,8 @@ export default function PsychologyKnowledgeModal({
   onClose,
   onSubmit,
 }) {
-  const [content, setContent] = useState(initialData?.content || '');
-  const [source, setSource] = useState(initialData?.source || '');
+  const [content, setContent] = useState(initialData?.content ?? '');
+  const [source, setSource] = useState(initialData?.source ?? '');
 
   const isEdit = mode === 'edit';
 
