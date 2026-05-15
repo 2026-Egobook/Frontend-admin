@@ -5,17 +5,18 @@ import { useMemberList } from '../hooks/useMemberList';
 
 function MemberListPage() {
   const [keyword, setKeyword] = useState('');
-  const [status, setStatus] = useState('ALL');
+  const [submittedKeyword, setSubmittedKeyword] = useState('');
+  const [status, setStatus] = useState('ACTIVE');
   const [page, setPage] = useState(1);
   const size = 5;
 
-  const { data, isLoading } = useMemberList({ keyword, status, page, size });
+  const { data, isLoading } = useMemberList({ keyword: submittedKeyword, status, page, size });
 
   const members = data?.content ?? [];
   const hasNext = data?.hasNext ?? false;
 
-  const handleKeywordChange = (value) => {
-    setKeyword(value);
+  const handleSearch = () => {
+    setSubmittedKeyword(keyword);
     setPage(1);
   };
 
@@ -26,13 +27,14 @@ function MemberListPage() {
 
   return (
     <div className="flex flex-col gap-6 bg-white">
-      <h1 className="text-[36px] font-semibold leading-[44px] text-neutral-950">회원 관리</h1>
+      <h1 className="text-2xl font-semibold leading-8 text-neutral-950">회원 관리</h1>
 
       <MemberFilter
         keyword={keyword}
         status={status}
-        onKeywordChange={handleKeywordChange}
+        onKeywordChange={setKeyword}
         onStatusChange={handleStatusChange}
+        onSearch={handleSearch}
       />
 
       {isLoading ? (

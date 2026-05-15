@@ -1,30 +1,44 @@
 import { FiSearch } from 'react-icons/fi';
 
-function MemberFilter({ keyword, status, onKeywordChange, onStatusChange }) {
+function MemberFilter({ keyword, status, onKeywordChange, onStatusChange, onSearch }) {
   const filters = [
-    { label: '전체', value: 'ALL' },
-    { label: '제재중', value: 'SUSPENDED' },
-    { label: '탈퇴예정', value: 'WITHDRAW_PENDING' },
+    { label: '활동', value: 'ACTIVE' },
+    { label: '휴면', value: 'DORMANT' },
+    { label: '탈퇴대기', value: 'WITHDRAW_PENDING' },
+    { label: '정지', value: 'SUSPENDED' },
   ];
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') onSearch?.();
+  };
 
   return (
     <section className="flex flex-col gap-4 rounded-[10px] border border-neutral-200 bg-white p-6">
-      <div className="relative">
-        <FiSearch className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-400" />
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <FiSearch className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-400" />
+          <input
+            type="text"
+            value={keyword}
+            onChange={(e) => onKeywordChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="계정 코드, 이메일, 닉네임으로 검색"
+            className="h-11 w-full rounded border border-neutral-300 bg-white pl-11 pr-4 text-base text-neutral-950 outline-none placeholder:text-neutral-400 focus:border-neutral-400"
+          />
+        </div>
 
-        <input
-          type="text"
-          value={keyword}
-          onChange={(e) => onKeywordChange(e.target.value)}
-          placeholder="사용자 ID, 이메일, 닉네임으로 검색"
-          className="h-11 w-full rounded border border-neutral-300 bg-white pl-11 pr-4 text-base text-neutral-950 outline-none placeholder:text-neutral-400 focus:border-neutral-400"
-        />
+        <button
+          type="button"
+          onClick={onSearch}
+          className="h-11 rounded bg-black px-5 text-sm font-medium text-white"
+        >
+          검색
+        </button>
       </div>
 
       <div className="flex gap-2">
         {filters.map((filter) => {
           const isActive = status === filter.value;
-
           return (
             <button
               key={filter.value}

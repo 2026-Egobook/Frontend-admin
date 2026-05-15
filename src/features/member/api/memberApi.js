@@ -1,8 +1,7 @@
 import { publicAPI } from '@/shared/api/apiInstance';
 
-export const getMemberList = async ({ keyword = '', status, page = 1, size = 5 } = {}) => {
-  const params = { keyword, page, size };
-  if (status && status !== 'ALL') params.status = status;
+export const getMemberList = async ({ keyword = '', status = 'ACTIVE', page = 1, size = 5 } = {}) => {
+  const params = { keyword: keyword.trim(), status, page, size };
   const { data } = await publicAPI.get('/admin/users', { params });
   return data;
 };
