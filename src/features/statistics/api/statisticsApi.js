@@ -1,75 +1,111 @@
-const wait = () => new Promise((resolve) => setTimeout(resolve, 150));
+import { publicAPI } from '@/shared/api/apiInstance';
 
-export async function getUserStatistics() {
-  await wait();
+function formatDate(date) {
+  if (!date) return '';
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
 
+const WITHDRAW_REASON_LABEL = {
+  NOT_USED_OFTEN: '자주 사용 안함',
+  LACK_OF_FUNCTION: '기능 부족',
+  INCONVENIENT: '앱 사용 불편',
+  HARD_TO_EARN_INK: '잉크 모으기 어려움',
+  OTHER: '기타',
+};
+
+const DIARY_TYPE_LABEL = {
+  EMOTION: '감정',
+  WORRY: '고민',
+  PRAISE: '칭찬',
+  GRATITUDE: '감사',
+};
+
+function toPercent(ratio) {
+  return Math.round(ratio * 1000) / 10;
+}
+
+export async function getDauMauStats({ startDate, endDate }) {
+  const { data } = await publicAPI.get('/admin/stats/users/dau-mau', {
+    params: { startDate: formatDate(startDate), endDate: formatDate(endDate) },
+  });
+  return (data.data?.data ?? []).map((item) => ({
+    date: item.date,
+    dau: item.dau,
+    mau: item.mau,
+  }));
+}
+
+export async function getRetentionStats() {
+  const { data } = await publicAPI.get('/admin/stats/users/retention');
   return {
-    dauMau: [
-      { date: '2026-04-01', dau: 3100, mau: 8600 },
-      { date: '2026-04-02', dau: 3200, mau: 8700 },
-      { date: '2026-04-03', dau: 3150, mau: 8750 },
-      { date: '2026-04-04', dau: 3300, mau: 8700 },
-      { date: '2026-04-05', dau: 3400, mau: 8850 },
-      { date: '2026-04-06', dau: 3350, mau: 8900 },
-      { date: '2026-04-07', dau: 3500, mau: 8950 },
-      { date: '2026-04-09', dau: 3250, mau: 9050 },
-    ],
-    joinLeave: [
-      { date: '2026-01', joined: 320, left: 45 },
-      { date: '2026-02', joined: 280, left: 60 },
-      { date: '2026-03', joined: 520, left: 40 },
-      { date: '2026-04', joined: 450, left: 50 },
-    ],
-    retention: {
-      days: 7,
-      rate: 68.4,
-    },
+    day7: toPercent(data.data.day7RetentionRate),
+    day30: toPercent(data.data.day30RetentionRate),
   };
 }
 
-export async function getContentStatistics() {
-  await wait();
+export async function getJoinWithdrawStats({ startDate, endDate, unit = 'MONTH' }) {
+  const { data } = await publicAPI.get('/admin/stats/users/join-withdraw', {
+    params: { startDate: formatDate(startDate), endDate: formatDate(endDate), unit },
+  });
+  return (data.data?.data ?? []).map((item) => ({
+    date: item.period,
+    joined: item.join,
+    left: item.withdraw,
+  }));
+}
 
+export async function getWithdrawReasonStats({ startDate, endDate }) {
+  const { data } = await publicAPI.get('/admin/stats/withdraw-reason', {
+    params: { startDate: formatDate(startDate), endDate: formatDate(endDate) },
+  });
+  const result = data.data;
   return {
-    totalDiaryCount: 4820,
-    diaryTypeStats: [
-      { type: '감정', count: 1540 },
-      { type: '고민', count: 1230 },
-      { type: '칭찬', count: 1100 },
-      { type: '감사', count: 950 },
-    ],
-    letterGiveUp: {
-      totalLetterCount: 3200,
-      giveUpCount: 576,
-      giveUpRate: 18,
-    },
+    totalCount: result.total,
+    reasons: (result.data ?? []).map((item) => ({
+      reason: WITHDRAW_REASON_LABEL[item.reason] ?? item.reason,
+      count: item.count,
+      percent: toPercent(item.ratio),
+      examples: item.text,
+    })),
   };
 }
 
-export async function getCurrencyStatistics() {
-  await wait();
-
+export async function getLetterGiveUpStats({ startDate, endDate }) {
+  const { data } = await publicAPI.get('/admin/stats/letters/give-up', {
+    params: { startDate: formatDate(startDate), endDate: formatDate(endDate) },
+  });
+  const result = data.data;
   return {
-    inkStats: [
-      { date: '2026-01', issued: 52000, consumed: 47300 },
-      { date: '2026-02', issued: 48000, consumed: 51200 },
-      { date: '2026-03', issued: 56000, consumed: 50800 },
-      { date: '2026-04', issued: 50000, consumed: 44000 },
-    ],
+    totalLetterCount: result.total,
+    giveUpCount: result.giveUp,
+    giveUpRate: toPercent(result.giveUpRate),
   };
 }
 
-export async function getWithdrawalStatistics() {
-  await wait();
-
+export async function getDiaryStats({ startDate, endDate }) {
+  const { data } = await publicAPI.get('/admin/stats/diaries', {
+    params: { startDate: formatDate(startDate), endDate: formatDate(endDate) },
+  });
+  const result = data.data;
   return {
-    totalCount: 340,
-    reasons: [
-      { reason: '자주 사용 X', percent: 30.9, count: 105 },
-      { reason: '기능 부족', percent: 25.9, count: 88 },
-      { reason: '앱 사용 불편', percent: 27.1, count: 92 },
-      { reason: '잉크 모으기 어려움', percent: 18.8, count: 64 },
-      { reason: '기타', percent: 15.0, count: 51, examples: ['기타 사유 1', '기타 사유 2'] },
-    ],
+    totalDiaryCount: result.total,
+    diaryTypeStats: (result.data ?? []).map((item) => ({
+      type: DIARY_TYPE_LABEL[item.type] ?? item.type,
+      count: item.count,
+    })),
   };
+}
+
+export async function getInkStats({ startDate, endDate, unit = 'MONTH' }) {
+  const { data } = await publicAPI.get('/admin/stats/ink', {
+    params: { startDate: formatDate(startDate), endDate: formatDate(endDate), unit },
+  });
+  return (data.data?.data ?? []).map((item) => ({
+    date: item.period,
+    issued: item.issued,
+    consumed: item.consumed,
+  }));
 }

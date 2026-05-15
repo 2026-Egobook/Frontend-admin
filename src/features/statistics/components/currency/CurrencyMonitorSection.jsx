@@ -3,15 +3,15 @@ import ChartFilter from '../common/ChartFilter';
 import StatisticsCard from '../common/StatisticsCard';
 import InkChart from './InkChart';
 import InkSummaryCard from './InkSummaryCard';
-import { useCurrencyStatistics } from '../../hooks/useStatistics';
+import { useInkStats } from '../../hooks/useStatistics';
+import Spinner from '@/shared/components/ui/Spinner';
 
 export default function CurrencyMonitorSection() {
-  const [startDate, setStartDate] = useState(new Date('2026-04-01'));
-  const [endDate, setEndDate] = useState(new Date('2026-04-09'));
+  const [startDate, setStartDate] = useState(new Date('2026-01-01'));
+  const [endDate, setEndDate] = useState(new Date('2026-04-30'));
+  const [unit, setUnit] = useState('MONTH');
 
-  const { data } = useCurrencyStatistics();
-
-  if (!data) return null;
+  const { data: inkData, isLoading } = useInkStats({ startDate, endDate, unit });
 
   return (
     <StatisticsCard>
@@ -23,16 +23,23 @@ export default function CurrencyMonitorSection() {
           endDate={endDate}
           onStartDateChange={setStartDate}
           onEndDateChange={setEndDate}
+          unit={unit}
+          onUnitChange={setUnit}
         />
       </div>
 
-      <InkChart data={data.inkStats} />
-
-      <div className="mt-6 grid grid-cols-3 gap-4">
-        {data.inkStats.map((item) => (
-          <InkSummaryCard key={item.date} item={item} />
-        ))}
-      </div>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <>
+          <InkChart data={inkData ?? []} />
+          <div className="mt-6 grid grid-cols-3 gap-4">
+            {(inkData ?? []).map((item) => (
+              <InkSummaryCard key={item.date} item={item} />
+            ))}
+          </div>
+        </>
+      )}
     </StatisticsCard>
   );
 }

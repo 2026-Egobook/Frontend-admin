@@ -4,18 +4,20 @@ import StatisticsCard from '../common/StatisticsCard';
 import DauMauChart from './DauMauChart';
 import JoinLeaveChart from './JoinLeaveChart';
 import RetentionCard from './RetentionCard';
-import { useUserStatistics } from '../../hooks/useStatistics';
+import { useDauMauStats, useJoinWithdrawStats, useRetentionStats } from '../../hooks/useStatistics';
+import Spinner from '@/shared/components/ui/Spinner';
 
 export default function UserMetricSection() {
   const [dauStartDate, setDauStartDate] = useState(new Date('2026-04-01'));
-  const [dauEndDate, setDauEndDate] = useState(new Date('2026-04-09'));
+  const [dauEndDate, setDauEndDate] = useState(new Date('2026-04-30'));
 
-  const [joinStartDate, setJoinStartDate] = useState(new Date('2026-04-01'));
-  const [joinEndDate, setJoinEndDate] = useState(new Date('2026-04-09'));
+  const [joinStartDate, setJoinStartDate] = useState(new Date('2026-01-01'));
+  const [joinEndDate, setJoinEndDate] = useState(new Date('2026-04-30'));
+  const [joinUnit, setJoinUnit] = useState('MONTH');
 
-  const { data } = useUserStatistics();
-
-  if (!data) return null;
+  const { data: dauData, isLoading: dauLoading } = useDauMauStats({ startDate: dauStartDate, endDate: dauEndDate });
+  const { data: joinLeaveData, isLoading: joinLeaveLoading } = useJoinWithdrawStats({ startDate: joinStartDate, endDate: joinEndDate, unit: joinUnit });
+  const { data: retentionData } = useRetentionStats();
 
   return (
     <div className="flex flex-col gap-6">
@@ -31,7 +33,7 @@ export default function UserMetricSection() {
           />
         </div>
 
-        <DauMauChart data={data.dauMau} />
+        {dauLoading ? <Spinner /> : <DauMauChart data={dauData ?? []} />}
       </StatisticsCard>
 
       <StatisticsCard>
@@ -43,13 +45,15 @@ export default function UserMetricSection() {
             endDate={joinEndDate}
             onStartDateChange={setJoinStartDate}
             onEndDateChange={setJoinEndDate}
+            unit={joinUnit}
+            onUnitChange={setJoinUnit}
           />
         </div>
 
-        <JoinLeaveChart data={data.joinLeave} />
+        {joinLeaveLoading ? <Spinner /> : <JoinLeaveChart data={joinLeaveData ?? []} />}
       </StatisticsCard>
 
-      <RetentionCard data={data.retention} />
+      <RetentionCard data={retentionData} />
     </div>
   );
 }

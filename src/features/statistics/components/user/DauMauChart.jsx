@@ -12,8 +12,8 @@ import ChartTooltip from '../common/ChartTooltip';
 
 export default function DauMauChart({ data = [] }) {
   return (
-    <div className="h-72 min-h-72 w-full min-w-0">
-      <ResponsiveContainer width="100%" height="100%">
+    <div className="w-full min-w-0">
+      <ResponsiveContainer width="100%" height={288}>
         <LineChart data={data} margin={{ top: 10, right: 24, bottom: 10, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
