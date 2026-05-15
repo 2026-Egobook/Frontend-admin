@@ -1,45 +1,83 @@
-export default function SanctionHistorySection({ sanctions }) {
+const DOMAIN_TYPE_LABEL = {
+  LETTER: '편지',
+  QUESTION_ANSWER: '질문 답변',
+};
+
+const REASON_LABEL = {
+  ABUSE: '비속어 및 모욕',
+  SPAM: '광고 및 스팸',
+  INAPPROPRIATE: '부적절한 콘텐츠',
+  OTHER: '기타',
+};
+
+const STATUS_LABEL = {
+  ACTIVE: '제재중',
+  CANCELED: '취소됨',
+  EXPIRED: '만료됨',
+};
+
+export default function SanctionHistorySection({ restrictions = [], isLoading }) {
+  if (isLoading) {
+    return (
+      <section className="flex flex-col gap-2 border-t border-neutral-200 pt-4">
+        <h3 className="text-sm font-medium leading-5 text-neutral-950">제재 이력</h3>
+        <div className="py-4 text-center text-sm text-neutral-500">제재 이력을 불러오는 중입니다.</div>
+      </section>
+    );
+  }
+
   return (
     <section className="flex flex-col gap-2 border-t border-neutral-200 pt-4">
       <h3 className="text-sm font-medium leading-5 text-neutral-950">제재 이력</h3>
 
-      <div className="flex flex-col gap-2">
-        {sanctions.map((item, index) => {
-          const isActive = item.statusLabel === '제재중';
+      {restrictions.length === 0 ? (
+        <div className="py-4 text-center text-sm text-neutral-500">제재 이력이 없습니다.</div>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {restrictions.map((item) => {
+            const isActive = item.restrictionStatus === 'ACTIVE';
+            const domainLabel = DOMAIN_TYPE_LABEL[item.domainType] ?? item.domainType;
+            const reasonLabel = REASON_LABEL[item.reason] ?? item.reason;
+            const statusLabel = STATUS_LABEL[item.restrictionStatus] ?? item.restrictionStatus;
 
-          return (
-            <div
-              key={`${item.title}-${index}`}
-              className={`rounded border px-3 py-3 ${
-                isActive ? 'border-red-200 bg-red-50' : 'border-neutral-200 bg-neutral-50'
-              }`}
-            >
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <div className="text-sm font-medium leading-5 text-neutral-950">{item.title}</div>
-                  <div className="mt-1 text-xs font-normal leading-4 text-neutral-600">
-                    {item.description}
+            return (
+              <div
+                key={item.restrictionId}
+                className={`rounded border px-3 py-3 ${
+                  isActive ? 'border-red-200 bg-red-50' : 'border-neutral-200 bg-neutral-50'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <div className="text-sm font-medium leading-5 text-neutral-950">
+                      {domainLabel} - {reasonLabel}
+                    </div>
+                    <div className="mt-1 text-xs font-normal leading-4 text-neutral-600">
+                      {item.description}
+                    </div>
+                    <div className="mt-1 text-xs font-normal leading-4 text-neutral-600">
+                      {item.createdAt}
+                    </div>
                   </div>
-                  <div className="mt-1 text-xs font-normal leading-4 text-neutral-600">
-                    {item.createdAt}
-                  </div>
-                </div>
 
-                <div className="text-right">
-                  <div
-                    className={`text-sm font-medium leading-5 ${
-                      isActive ? 'text-red-600' : 'text-neutral-600'
-                    }`}
-                  >
-                    {item.statusLabel}
+                  <div className="text-right shrink-0">
+                    <div
+                      className={`text-sm font-medium leading-5 ${
+                        isActive ? 'text-red-600' : 'text-neutral-600'
+                      }`}
+                    >
+                      {statusLabel}
+                    </div>
+                    <div className="text-xs font-normal leading-4 text-neutral-600">
+                      ~{item.restrictionUntil}
+                    </div>
                   </div>
-                  <div className="text-xs font-normal leading-4 text-neutral-600">{item.endAt}</div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }
