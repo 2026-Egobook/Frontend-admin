@@ -1,235 +1,109 @@
-const DAILY_PRAISE_STATS = {
-  startDate: '2026-04-01',
-  endDate: '2026-04-09',
-  summary: {
-    completedCount: 110,
-    failedCount: 10,
-    scheduledCount: 120,
-  },
-  dailyStats: [
-    {
-      date: '2026-04-01',
-      scheduledCount: 20,
-      completedCount: 18,
-      failedCount: 2,
-    },
-    {
-      date: '2026-04-02',
-      scheduledCount: 25,
-      completedCount: 24,
-      failedCount: 1,
-    },
-    {
-      date: '2026-04-03',
-      scheduledCount: 22,
-      completedCount: 20,
-      failedCount: 2,
-    },
-    {
-      date: '2026-04-04',
-      scheduledCount: 18,
-      completedCount: 17,
-      failedCount: 1,
-    },
-    {
-      date: '2026-04-05',
-      scheduledCount: 19,
-      completedCount: 17,
-      failedCount: 2,
-    },
-    {
-      date: '2026-04-06',
-      scheduledCount: 10,
-      completedCount: 9,
-      failedCount: 1,
-    },
-    {
-      date: '2026-04-07',
-      scheduledCount: 8,
-      completedCount: 7,
-      failedCount: 1,
-    },
-    {
-      date: '2026-04-08',
-      scheduledCount: 9,
-      completedCount: 8,
-      failedCount: 1,
-    },
-    {
-      date: '2026-04-09',
-      scheduledCount: 9,
-      completedCount: 8,
-      failedCount: 1,
-    },
-  ],
-  failureLogs: [
-    {
-      failureId: 1,
-      userId: 35,
-      failedAt: '2026-04-01T09:01:12',
-      reason: 'FCM_TOKEN_NOT_FOUND',
-      checked: true,
-    },
-    {
-      failureId: 2,
-      userId: 47,
-      failedAt: '2026-04-01T09:02:44',
-      reason: 'AI_RESPONSE_TIMEOUT',
-      checked: false,
-    },
-    {
-      failureId: 3,
-      userId: 52,
-      failedAt: '2026-04-02T10:15:30',
-      reason: 'FCM_TOKEN_NOT_FOUND',
-      checked: false,
-    },
-  ],
-};
+import { publicAPI } from '@/shared/api/apiInstance';
 
-const WEEKLY_REPORT_STATS = {
-  startDate: '2026-04-01',
-  endDate: '2026-04-09',
-  summary: {
-    completedCount: 72,
-    failedCount: 8,
-    scheduledCount: 80,
-  },
-  failureLogs: [
-    {
-      failureId: 101,
-      userId: 12,
-      failedAt: '2026-04-03T08:10:11',
-      reason: 'USER_INACTIVE',
-      checked: true,
-    },
-    {
-      failureId: 102,
-      userId: 23,
-      failedAt: '2026-04-05T09:22:33',
-      reason: 'FCM_TOKEN_NOT_FOUND',
-      checked: false,
-    },
-  ],
-};
+// 응답 래퍼가 data 또는 result 키를 사용하는 두 가지 패턴을 모두 처리
+const unwrap = (response) => response.data?.data ?? response.data?.result ?? response.data;
 
-const LETTER_STATS = {
-  startDate: '2026-04-01',
-  endDate: '2026-04-09',
-  summary: {
-    completedCount: 250,
-    pendingCount: 34,
-    aiReplyCount: 18,
-    failedCount: 4,
-  },
-  failureLogs: [
-    {
-      logId: 1,
-      letterId: 2001,
-      failedAt: '2026-04-02T11:20:10',
-      reason: 'NO_RECEIVER_AVAILABLE',
-    },
-    {
-      logId: 2,
-      letterId: 2034,
-      failedAt: '2026-04-03T14:35:22',
-      reason: 'USER_BLOCKED',
-    },
-  ],
-};
-
-const BAD_WORD_STATS = {
-  startDate: '2026-04-01',
-  endDate: '2026-04-09',
-  summary: {
-    blockedCount: 18,
-    blockedRate: '12.5%',
-  },
-  blockedTexts: [
-    {
-      blockId: 1,
-      userId: 42,
-      contentType: 'LETTER',
-      createdAt: '2026-04-01T14:20:30',
-      originalText: '진짜 너무 짜증나고 욕하고 싶어요',
-      keywords: ['짜증', '욕'],
-      score: '87%',
-    },
-    {
-      blockId: 2,
-      userId: 58,
-      contentType: 'REPLY',
-      createdAt: '2026-04-02T10:15:45',
-      originalText: '바보같은 소리 하지마',
-      keywords: ['바보'],
-      score: '82%',
-    },
-    {
-      blockId: 3,
-      userId: 73,
-      contentType: 'PRAISE',
-      createdAt: '2026-04-03T16:42:12',
-      originalText: '멍청한 칭찬이네',
-      keywords: ['멍청'],
-      score: '91%',
-    },
-  ],
-};
-
-export const getDailyPraiseStats = async ({ startDate, endDate }) => {
-  await new Promise((resolve) => setTimeout(resolve, 150));
-
+export const getLetterStats = async ({ startDate, endDate }) => {
+  const response = await publicAPI.get('/admin/letters/status', {
+    params: { startDate, endDate },
+  });
+  const raw = unwrap(response);
   return {
-    ...DAILY_PRAISE_STATS,
-    startDate: startDate || DAILY_PRAISE_STATS.startDate,
-    endDate: endDate || DAILY_PRAISE_STATS.endDate,
-  };
-};
-
-export const resendDailyPraiseFailures = async ({ failureIds }) => {
-  await new Promise((resolve) => setTimeout(resolve, 150));
-
-  return {
-    success: true,
-    resentFailureIds: failureIds,
+    summary: {
+      completedCount: raw.summary.sentCount,
+      pendingCount: raw.summary.waitingCount,
+      aiReplyCount: raw.summary.aiReplyCount,
+      failedCount: raw.summary.failCount,
+    },
+    failureLogs: (raw.failLogs ?? []).map((log) => ({
+      logId: log.logId,
+      letterId: log.letterId,
+      failedAt: log.failedAt,
+      reason: log.reason,
+    })),
   };
 };
 
 export const getWeeklyReportStats = async ({ startDate, endDate }) => {
-  await new Promise((resolve) => setTimeout(resolve, 150));
-
+  const response = await publicAPI.get('/admin/ai/weekly-report/status', {
+    params: { startDate, endDate },
+  });
+  const raw = unwrap(response);
   return {
-    ...WEEKLY_REPORT_STATS,
-    startDate: startDate || WEEKLY_REPORT_STATS.startDate,
-    endDate: endDate || WEEKLY_REPORT_STATS.endDate,
+    summary: {
+      completedCount: raw.summary.successCount,
+      failedCount: raw.summary.failCount,
+      scheduledCount: raw.summary.scheduledCount,
+    },
+    failureLogs: (raw.failLogs ?? []).map((log) => ({
+      failureId: log.failId,
+      userId: log.userId,
+      failedAt: log.failedAt,
+      reason: log.reason,
+      checked: false,
+    })),
   };
 };
 
 export const resendWeeklyReportFailures = async ({ failureIds }) => {
-  await new Promise((resolve) => setTimeout(resolve, 150));
+  const response = await publicAPI.post('/admin/ai/weekly-report/resend', {
+    failIds: failureIds,
+  });
+  return unwrap(response);
+};
 
+export const getDailyPraiseStats = async ({ startDate, endDate }) => {
+  const response = await publicAPI.get('/admin/ai/daily-praise/status', {
+    params: { startDate, endDate },
+  });
+  const raw = unwrap(response);
   return {
-    success: true,
-    resentFailureIds: failureIds,
+    summary: {
+      completedCount: raw.summary.successCount,
+      failedCount: raw.summary.failCount,
+      scheduledCount: raw.summary.scheduledCount,
+    },
+    dailyStats: (raw.dailyStats ?? []).map((row) => ({
+      date: row.date,
+      scheduledCount: row.scheduledCount,
+      completedCount: row.successCount,
+      failedCount: row.failCount,
+    })),
+    failureLogs: (raw.failLogs ?? []).map((log) => ({
+      failureId: log.failId,
+      userId: log.userId,
+      failedAt: log.failedAt,
+      reason: log.reason,
+      checked: false,
+    })),
   };
 };
 
-export const getLetterStats = async ({ startDate, endDate }) => {
-  await new Promise((resolve) => setTimeout(resolve, 150));
-
-  return {
-    ...LETTER_STATS,
-    startDate: startDate || LETTER_STATS.startDate,
-    endDate: endDate || LETTER_STATS.endDate,
-  };
+export const resendDailyPraiseFailures = async ({ failureIds }) => {
+  const response = await publicAPI.post('/admin/ai/daily-praise/resend', {
+    failIds: failureIds,
+  });
+  return unwrap(response);
 };
 
-export const getBadWordStats = async ({ startDate, endDate }) => {
-  await new Promise((resolve) => setTimeout(resolve, 150));
-
+export const getBadWordStats = async ({ startDate, endDate, type = 'ALL' }) => {
+  const response = await publicAPI.get('/admin/ai/bad-words/status', {
+    params: { startDate, endDate, type },
+  });
+  const raw = unwrap(response);
   return {
-    ...BAD_WORD_STATS,
-    startDate: startDate || BAD_WORD_STATS.startDate,
-    endDate: endDate || BAD_WORD_STATS.endDate,
+    summary: {
+      blockedCount: raw.summary.blockedCount,
+      blockedRate: `${raw.summary.blockRate}%`,
+    },
+    blockedTexts: (raw.blockedLogs ?? []).map((log) => ({
+      blockId: log.blockId,
+      userId: log.userId,
+      contentType: log.type,
+      createdAt: log.blockedAt,
+      originalText: log.originalText,
+      keywords: log.badWords ?? [],
+      score: `${Math.round((log.score ?? 0) * 100)}%`,
+    })),
   };
 };
