@@ -1,13 +1,14 @@
 import { FiSearch } from 'react-icons/fi';
 
-function MemberFilter({ keyword, status, onKeywordChange, onStatusChange, onSearch }) {
-  const filters = [
-    { label: '활동', value: 'ACTIVE' },
-    { label: '휴면', value: 'DORMANT' },
-    { label: '탈퇴대기', value: 'WITHDRAW_PENDING' },
-    { label: '정지', value: 'SUSPENDED' },
-  ];
+const STATUS_FILTERS = [
+  { label: '전체', value: '' },
+  { label: '활동', value: 'ACTIVE' },
+  { label: '휴면', value: 'DORMANT' },
+  { label: '탈퇴대기', value: 'WITHDRAW_PENDING' },
+  { label: '정지', value: 'SUSPENDED' },
+];
 
+function MemberFilter({ keyword, status, onKeywordChange, onStatusChange, onSearch, onReset }) {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') onSearch?.();
   };
@@ -34,14 +35,22 @@ function MemberFilter({ keyword, status, onKeywordChange, onStatusChange, onSear
         >
           검색
         </button>
+
+        <button
+          type="button"
+          onClick={onReset}
+          className="h-11 rounded border border-neutral-300 px-5 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
+        >
+          초기화
+        </button>
       </div>
 
       <div className="flex gap-2">
-        {filters.map((filter) => {
+        {STATUS_FILTERS.map((filter) => {
           const isActive = status === filter.value;
           return (
             <button
-              key={filter.value}
+              key={filter.value || 'all'}
               type="button"
               onClick={() => onStatusChange(filter.value)}
               className={`rounded px-5 py-2 text-sm font-medium leading-5 ${

@@ -1,18 +1,22 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import MemberSummaryCard from '../components/MemberSummaryCard';
 import ReportHistorySection from '../components/ReportHistorySection';
 import SanctionHistorySection from '../components/SanctionHistorySection';
 import SanctionActionButtons from '../components/SanctionActionButtons';
 import ApplySanctionModal from '../components/ApplySanctionModal';
 import CancelSanctionModal from '../components/CancelSanctionModal';
+import ReportStatusModal from '../components/ReportStatusModal';
 import { useMemberDetail } from '../hooks/useMemberDetail';
 import { useMemberStats } from '../hooks/useMemberStats';
 import { useMemberReportHistory } from '../hooks/useMemberReportHistory';
 import { useMemberRestrictions } from '../hooks/useMemberRestrictions';
 import { useApplyMemberSanction } from '../hooks/useApplyMemberSanction';
 import { useCancelMemberSanction } from '../hooks/useCancelMemberSanction';
+import { deleteReportedContent } from '@/features/report/api/reportApi';
+import Spinner from '@/shared/components/ui/Spinner';
 
 const DOMAIN_TYPE_LABEL = {
   LETTER: '편지',
@@ -26,23 +30,64 @@ const REASON_LABEL = {
   OTHER: '기타',
 };
 
+const CONTENT_TYPE_MAP = {
+  LETTER: 'LETTER',
+  LETTER_REPLY: 'REPLY',
+  QUESTION_ANSWER: 'ANSWER',
+};
+
+function groupReports(reports) {
+  const map = new Map();
+  reports.forEach((report) => {
+    const key = `${report.reportDomainType}__${report.targetId}`;
+    if (!map.has(key)) {
+      map.set(key, {
+        key,
+        domainType: report.reportDomainType,
+        targetId: report.targetId,
+        content: report.content,
+        reports: [],
+      });
+    }
+    map.get(key).reports.push(report);
+  });
+  return Array.from(map.values());
+}
+
 export default function MemberDetailPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { memberId } = useParams();
 
   const { data: member, isLoading: memberLoading } = useMemberDetail(memberId);
   const { data: stats, isLoading: statsLoading } = useMemberStats(memberId);
 
-  const [reportPage, setReportPage] = useState(1);
-  const [reportDomainType, setReportDomainType] = useState('LETTER');
-  const [reportType, setReportType] = useState(null);
-  const { data: reportData, isLoading: reportLoading } = useMemberReportHistory({
-    userId: memberId,
-    reportDomainType,
-    reportType,
-    page: reportPage,
-    size: 10,
+  const [reportType, setReportType] = useState('REPORTED');
+  const [processModal, setProcessModal] = useState({ open: false, report: null });
+  const [processing, setProcessing] = useState(false);
+
+  const { data: letterData, isLoading: letterLoading } = useMemberReportHistory({
+    userId: memberId, reportDomainType: 'LETTER', reportType, size: 100,
   });
+  const { data: replyData, isLoading: replyLoading } = useMemberReportHistory({
+    userId: memberId, reportDomainType: 'LETTER_REPLY', reportType, size: 100,
+  });
+  const { data: answerData, isLoading: answerLoading } = useMemberReportHistory({
+    userId: memberId, reportDomainType: 'QUESTION_ANSWER', reportType, size: 100,
+  });
+
+  const reportLoading = letterLoading || replyLoading || answerLoading;
+
+  const summary = letterData?.summary;
+
+  const groupedReports = useMemo(() => {
+    const allReports = [
+      ...(letterData?.reportList?.content ?? []),
+      ...(replyData?.reportList?.content ?? []),
+      ...(answerData?.reportList?.content ?? []),
+    ];
+    return groupReports(allReports);
+  }, [letterData, replyData, answerData]);
 
   const { data: restrictionData, isLoading: restrictionLoading } = useMemberRestrictions({
     userId: memberId,
@@ -66,6 +111,31 @@ export default function MemberDetailPage() {
     setCancelModalOpen(false);
   };
 
+  const handleProcess = (report) => {
+    setProcessModal({ open: true, report });
+  };
+
+  const handleResolve = async () => {
+    const { report } = processModal;
+    if (!report) return;
+    try {
+      setProcessing(true);
+      await deleteReportedContent({
+        contentType: CONTENT_TYPE_MAP[report.reportDomainType],
+        contentId: report.targetId,
+      });
+      queryClient.invalidateQueries({ queryKey: ['memberReportHistory'] });
+      setProcessModal({ open: false, report: null });
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleRefuse = async () => {
+    // 백엔드 API 미제공 — 추후 연동
+    setProcessModal({ open: false, report: null });
+  };
+
   const restrictions = restrictionData?.content ?? [];
   const activeRestrictions = restrictions
     .filter((r) => r.restrictionStatus === 'ACTIVE')
@@ -77,11 +147,7 @@ export default function MemberDetailPage() {
   const isLoading = memberLoading || statsLoading;
 
   if (isLoading) {
-    return (
-      <div className="rounded-[10px] border border-neutral-200 bg-white px-6 py-10 text-sm text-neutral-500">
-        회원 상세 정보를 불러오는 중입니다.
-      </div>
-    );
+    return <Spinner />;
   }
 
   if (!member) {
@@ -111,22 +177,12 @@ export default function MemberDetailPage() {
           <MemberSummaryCard member={member} stats={stats} />
 
           <ReportHistorySection
-            summary={reportData?.summary}
-            reports={reportData?.reportList?.content ?? []}
-            hasNext={reportData?.reportList?.hasNext ?? false}
-            page={reportPage}
-            reportDomainType={reportDomainType}
+            summary={summary}
+            groupedReports={groupedReports}
             reportType={reportType}
+            onReportTypeChange={setReportType}
             isLoading={reportLoading}
-            onPageChange={setReportPage}
-            onReportDomainTypeChange={(type) => {
-              setReportDomainType(type);
-              setReportPage(1);
-            }}
-            onReportTypeChange={(type) => {
-              setReportType(type);
-              setReportPage(1);
-            }}
+            onProcess={handleProcess}
           />
 
           <SanctionHistorySection
@@ -152,6 +208,15 @@ export default function MemberDetailPage() {
         onClose={() => setCancelModalOpen(false)}
         activeRestrictions={activeRestrictions}
         onSubmit={handleCancelSanction}
+      />
+
+      <ReportStatusModal
+        open={processModal.open}
+        report={processModal.report}
+        processing={processing}
+        onClose={() => setProcessModal({ open: false, report: null })}
+        onResolve={handleResolve}
+        onRefuse={handleRefuse}
       />
     </>
   );

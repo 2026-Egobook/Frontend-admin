@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import MemberStatusBadge from './MemberStatusBadge';
+import { PATH } from '@/app/routes/path';
 
 export default function MemberTable({ members }) {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ export default function MemberTable({ members }) {
                 <td className="px-6 py-6 text-sm text-black">
                   <button
                     type="button"
-                    onClick={() => navigate(`/members/${member.userId}`)}
+                    onClick={() => navigate(PATH.MEMBER_DETAIL.replace(':memberId', member.userId))}
                     className="hover:underline"
                   >
                     상세보기

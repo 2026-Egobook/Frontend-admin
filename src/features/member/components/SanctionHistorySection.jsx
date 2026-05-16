@@ -1,3 +1,5 @@
+import { formatDateTime } from '@/shared/utils/dateUtils';
+
 const DOMAIN_TYPE_LABEL = {
   LETTER: '편지',
   QUESTION_ANSWER: '질문 답변',
@@ -17,21 +19,14 @@ const STATUS_LABEL = {
 };
 
 export default function SanctionHistorySection({ restrictions = [], isLoading }) {
-  if (isLoading) {
-    return (
-      <section className="flex flex-col gap-2 border-t border-neutral-200 pt-4">
-        <h3 className="text-sm font-medium leading-5 text-neutral-950">제재 이력</h3>
-        <div className="py-4 text-center text-sm text-neutral-500">제재 이력을 불러오는 중입니다.</div>
-      </section>
-    );
-  }
-
   return (
-    <section className="flex flex-col gap-2 border-t border-neutral-200 pt-4">
-      <h3 className="text-sm font-medium leading-5 text-neutral-950">제재 이력</h3>
+    <section className="flex flex-col gap-4 border-t border-neutral-200 pt-6">
+      <h2 className="text-lg font-semibold leading-7 text-neutral-950">제재 이력</h2>
 
-      {restrictions.length === 0 ? (
-        <div className="py-4 text-center text-sm text-neutral-500">제재 이력이 없습니다.</div>
+      {isLoading ? (
+        <div className="py-6 text-center text-sm text-neutral-500">제재 이력을 불러오는 중입니다.</div>
+      ) : restrictions.length === 0 ? (
+        <div className="py-6 text-center text-sm text-neutral-500">제재 이력이 없습니다.</div>
       ) : (
         <div className="flex flex-col gap-2">
           {restrictions.map((item) => {
@@ -48,7 +43,7 @@ export default function SanctionHistorySection({ restrictions = [], isLoading })
                 }`}
               >
                 <div className="flex items-center justify-between gap-4">
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium leading-5 text-neutral-950">
                       {domainLabel} - {reasonLabel}
                     </div>
@@ -56,11 +51,11 @@ export default function SanctionHistorySection({ restrictions = [], isLoading })
                       {item.description}
                     </div>
                     <div className="mt-1 text-xs font-normal leading-4 text-neutral-600">
-                      {item.createdAt}
+                      {formatDateTime(item.createdAt)}
                     </div>
                   </div>
 
-                  <div className="text-right shrink-0">
+                  <div className="shrink-0 text-right">
                     <div
                       className={`text-sm font-medium leading-5 ${
                         isActive ? 'text-red-600' : 'text-neutral-600'
@@ -69,7 +64,7 @@ export default function SanctionHistorySection({ restrictions = [], isLoading })
                       {statusLabel}
                     </div>
                     <div className="text-xs font-normal leading-4 text-neutral-600">
-                      ~{item.restrictionUntil}
+                      ~{formatDateTime(item.restrictionUntil)}
                     </div>
                   </div>
                 </div>

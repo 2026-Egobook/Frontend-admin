@@ -1,29 +1,57 @@
-import { useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import MemberFilter from '../components/MemberFilter';
 import MemberTable from '../components/MemberTable';
 import { useMemberList } from '../hooks/useMemberList';
+import Spinner from '@/shared/components/ui/Spinner';
 
 function MemberListPage() {
   const [keyword, setKeyword] = useState('');
   const [submittedKeyword, setSubmittedKeyword] = useState('');
-  const [status, setStatus] = useState('ACTIVE');
-  const [page, setPage] = useState(1);
-  const size = 5;
+  const [status, setStatus] = useState('');
 
-  const { data, isLoading } = useMemberList({ keyword: submittedKeyword, status, page, size });
+  const sentinelRef = useRef(null);
 
-  const members = data?.content ?? [];
-  const hasNext = data?.hasNext ?? false;
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = useMemberList({ keyword: submittedKeyword, status });
+
+  const members = data?.pages.flatMap((p) => p.content) ?? [];
 
   const handleSearch = () => {
     setSubmittedKeyword(keyword);
-    setPage(1);
   };
 
   const handleStatusChange = (value) => {
     setStatus(value);
-    setPage(1);
+    setSubmittedKeyword(keyword);
   };
+
+  const handleReset = () => {
+    setKeyword('');
+    setSubmittedKeyword('');
+    setStatus('');
+  };
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
     <div className="flex flex-col gap-6 bg-white">
@@ -35,37 +63,17 @@ function MemberListPage() {
         onKeywordChange={setKeyword}
         onStatusChange={handleStatusChange}
         onSearch={handleSearch}
+        onReset={handleReset}
       />
 
       {isLoading ? (
-        <div className="rounded-[10px] border border-neutral-200 bg-white px-6 py-10 text-sm text-neutral-500">
-          회원 목록을 불러오는 중입니다.
-        </div>
+        <Spinner />
       ) : (
         <MemberTable members={members} />
       )}
 
-      <div className="flex items-center justify-center gap-2">
-        <button
-          type="button"
-          onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-          disabled={page === 1}
-          className="rounded border border-neutral-300 px-3 py-1.5 text-sm text-neutral-700 disabled:cursor-not-allowed disabled:text-neutral-300"
-        >
-          이전
-        </button>
-
-        <span className="text-sm text-neutral-600">{page} 페이지</span>
-
-        <button
-          type="button"
-          onClick={() => setPage((prev) => prev + 1)}
-          disabled={!hasNext}
-          className="rounded border border-neutral-300 px-3 py-1.5 text-sm text-neutral-700 disabled:cursor-not-allowed disabled:text-neutral-300"
-        >
-          다음
-        </button>
-      </div>
+      <div ref={sentinelRef} className="h-1" />
+      {isFetchingNextPage && <Spinner />}
     </div>
   );
 }

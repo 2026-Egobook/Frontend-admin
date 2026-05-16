@@ -1,4 +1,5 @@
 import MemberStatusBadge from './MemberStatusBadge';
+import { formatDateTime } from '@/shared/utils/dateUtils';
 
 function InfoField({ label, value }) {
   return (
@@ -52,8 +53,8 @@ export default function MemberSummaryCard({ member, stats }) {
           <InfoField label="사용자 ID" value={member.userId} />
           <InfoField label="계정 고유 코드" value={member.accountCode} />
           <InfoField label="이메일" value={member.email} />
-          <InfoField label="생성 일시" value={member.createdAt} />
-          <InfoField label="마지막 로그인" value={member.lastLoginAt} />
+          <InfoField label="생성 일시" value={formatDateTime(member.createdAt)} />
+          <InfoField label="마지막 로그인" value={formatDateTime(member.lastLoginAt)} />
 
           <div className="flex flex-col gap-1">
             <span className="text-sm font-normal leading-5 text-neutral-600">계정 상태</span>
@@ -62,8 +63,8 @@ export default function MemberSummaryCard({ member, stats }) {
             </div>
           </div>
 
-          <InfoField label="탈퇴 신청 일시" value={member.deletedAt} />
-          <InfoField label="데이터 전부 삭제 예정 일시" value={member.purgeAt} />
+          <InfoField label="탈퇴 신청 일시" value={formatDateTime(member.deletedAt)} />
+          <InfoField label="데이터 전부 삭제 예정 일시" value={formatDateTime(member.purgeAt)} />
         </div>
       </div>
 
@@ -75,20 +76,30 @@ export default function MemberSummaryCard({ member, stats }) {
             <StatField label="일기 작성 수" value={activityCount.diary} large />
             <StatField label="편지 작성 수" value={activityCount.letter} large />
             <StatField label="질문 답변 수" value={activityCount.questionAnswer} large />
-            <StatField label="편지 답변 수" value={activityCount.letterReply} large />
+            <StatField label="보유 잉크량" value={member.ink} large />
 
             <StatField
-              label="편지 수신 차단 종료"
-              value={stats?.letterReceiveBlockedUntil ?? '없음'}
+              label="고유 레벨"
+              value={member.level != null ? `Lv. ${member.level}` : '-'}
+              large
+            />
+            <StatField
+              label="편지 제한 시간"
+              value={
+                stats?.letterReceiveBlockedUntil
+                  ? formatDateTime(stats.letterReceiveBlockedUntil)
+                  : '없음'
+              }
             />
             <StatField
               label="알람 수신 여부"
               value={stats?.notificationEnabled == null ? '-' : stats.notificationEnabled ? 'ON' : 'OFF'}
             />
             <StatField
-              label="오늘 첫 출석 여부"
+              label="접속 보상 수령 여부"
               value={stats?.isFirstAttendanceToday == null ? '-' : stats.isFirstAttendanceToday ? '미수령' : '수령'}
             />
+
             <StatField
               label="주간 분석 수신 여부"
               value={stats?.weeklyAnalysisEnabled == null ? '-' : stats.weeklyAnalysisEnabled ? 'ON' : 'OFF'}
