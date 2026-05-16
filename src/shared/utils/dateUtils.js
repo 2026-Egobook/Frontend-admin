@@ -1,3 +1,14 @@
+export function formatDateTime(isoString) {
+  if (!isoString) return '-';
+  const d = new Date(isoString);
+  const yyyy = d.getFullYear();
+  const MM = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  return `${yyyy}-${MM}-${dd} ${hh}:${mm}`;
+}
+
 export function formatDate(date) {
   if (!date) return '';
 
