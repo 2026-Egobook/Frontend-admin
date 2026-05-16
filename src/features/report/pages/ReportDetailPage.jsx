@@ -2,11 +2,20 @@ import { useState } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import { useNavigate, useParams } from 'react-router-dom';
 import useReportDetail from '../hooks/useReportDetail';
-import { useDeleteReportedContent } from '../hooks/useReportActions';
+import {
+  useDeleteReportedContent,
+  useRejectReportGroup,
+  useApplyReportSanction,
+  useUpdateReportStatus,
+} from '../hooks/useReportActions';
+import Spinner from '@/shared/components/ui/Spinner';
 import ReportDetailHeader from '../components/ReportDetailHeader';
 import ReportHistoryList from '../components/ReportHistoryList';
 import ReportMemoForm from '../components/ReportMemoForm';
 import ContentDeleteModal from '../components/ContentDeleteModal';
+import RejectReportModal from '../components/RejectReportModal';
+import SanctionProcessModal from '../components/SanctionProcessModal';
+import ReportStatusChangeModal from '../components/ReportStatusChangeModal';
 
 export default function ReportDetailPage() {
   const navigate = useNavigate();
@@ -14,15 +23,17 @@ export default function ReportDetailPage() {
 
   const { data: detail, isLoading } = useReportDetail(contentType, reportId);
   const deleteContentMutation = useDeleteReportedContent(reportId);
+  const rejectMutation = useRejectReportGroup(reportId);
+  const sanctionMutation = useApplyReportSanction(reportId);
+  const updateStatusMutation = useUpdateReportStatus(reportId);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [sanctionModalOpen, setSanctionModalOpen] = useState(false);
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [processModal, setProcessModal] = useState({ open: false, report: null });
 
   if (isLoading) {
-    return (
-      <div className="rounded-[10px] border border-neutral-200 bg-white px-6 py-10 text-sm text-neutral-500">
-        신고 상세 정보를 불러오는 중입니다.
-      </div>
-    );
+    return <Spinner />;
   }
 
   if (!detail) {
@@ -32,6 +43,33 @@ export default function ReportDetailPage() {
       </div>
     );
   }
+
+  const handleProcessReport = (report) => {
+    setProcessModal({ open: true, report });
+  };
+
+  const handleResolve = async () => {
+    await updateStatusMutation.mutateAsync({
+      reportId: processModal.report?.reportId,
+      status: 'RESOLVED',
+    });
+    setProcessModal({ open: false, report: null });
+  };
+
+  const handleRefuse = () => {
+    setProcessModal({ open: false, report: null });
+    setRejectModalOpen(true);
+  };
+
+  const handleRejectSubmit = async ({ reason }) => {
+    await rejectMutation.mutateAsync({ reportId, reason });
+    setRejectModalOpen(false);
+  };
+
+  const handleSanctionSubmit = async ({ days, reason }) => {
+    await sanctionMutation.mutateAsync({ reportId, days, reason });
+    setSanctionModalOpen(false);
+  };
 
   return (
     <>
@@ -66,10 +104,18 @@ export default function ReportDetailPage() {
               >
                 콘텐츠 삭제
               </button>
+
+              <button
+                type="button"
+                onClick={() => setSanctionModalOpen(true)}
+                className="h-10 rounded bg-black px-4 text-base font-medium text-white"
+              >
+                제재 처리
+              </button>
             </div>
           </section>
 
-          <ReportHistoryList reports={detail.reports} />
+          <ReportHistoryList reports={detail.reports} onProcess={handleProcessReport} />
 
           <ReportMemoForm initialMemo={detail.memo} onSave={() => {}} />
         </div>
@@ -86,6 +132,26 @@ export default function ReportDetailPage() {
           setDeleteModalOpen(false);
           navigate(-1);
         }}
+      />
+
+      <SanctionProcessModal
+        open={sanctionModalOpen}
+        onClose={() => setSanctionModalOpen(false)}
+        onSubmit={handleSanctionSubmit}
+      />
+
+      <ReportStatusChangeModal
+        open={processModal.open}
+        report={processModal.report}
+        onClose={() => setProcessModal({ open: false, report: null })}
+        onResolve={handleResolve}
+        onRefuse={handleRefuse}
+      />
+
+      <RejectReportModal
+        open={rejectModalOpen}
+        onClose={() => setRejectModalOpen(false)}
+        onSubmit={handleRejectSubmit}
       />
     </>
   );

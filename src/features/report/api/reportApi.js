@@ -153,7 +153,7 @@ export async function getReportDetail(contentType, reportId) {
       totalReportCount: raw.reportCount,
       originalContent: raw.answerContent,
       memo: '',
-      reports: [{ reportId: raw.reportId, reason: REASON_LABEL[raw.reason] ?? raw.reason, description: raw.description, reporterId: raw.reporterNickname ?? raw.reporterId, createdAt: raw.reportedAt, status: raw.status ?? 'PENDING', statusLabel: STATUS_LABEL[raw.status] ?? '미처리' }],
+      reports: [{ reportId: raw.reportId, reason: REASON_LABEL[raw.reason] ?? raw.reason, description: raw.description, reporterId: raw.reporterId ?? raw.reporterNickname, createdAt: raw.reportedAt ?? raw.createdAt, status: raw.status ?? 'PENDING', statusLabel: STATUS_LABEL[raw.status] ?? '미처리' }],
     });
   } else {
     return null;

@@ -24,13 +24,15 @@ export default function ReportHistoryList({ reports = [], onProcess }) {
               </div>
 
               <div className="text-sm leading-5">
-                <span className="text-neutral-600">신고자:</span>
-                <span className="text-neutral-950"> {report.reporterNickname}</span>
+                <span className="text-neutral-600">신고자 ID:</span>
+                <span className="text-neutral-950"> {report.reporterId}</span>
               </div>
 
-              <div className="text-sm leading-5 text-neutral-600">
-                <span className="font-medium">상세 사유:</span> {report.detailReason}
-              </div>
+              {report.description && (
+                <div className="text-sm leading-5 text-neutral-600">
+                  <span className="font-medium">상세 사유:</span> {report.description}
+                </div>
+              )}
             </div>
 
             <div className="flex min-w-[180px] flex-col items-end gap-9">
@@ -41,13 +43,15 @@ export default function ReportHistoryList({ reports = [], onProcess }) {
               {report.status === 'PENDING' ? (
                 <div className="flex items-center gap-2">
                   <ReportStatusBadge status={report.status} label={report.statusLabel} />
-                  <button
-                    type="button"
-                    onClick={() => onProcess(report)}
-                    className="rounded bg-black px-2 py-1 text-xs font-medium leading-4 text-white"
-                  >
-                    처리
-                  </button>
+                  {onProcess && (
+                    <button
+                      type="button"
+                      onClick={() => onProcess(report)}
+                      className="rounded bg-black px-2 py-1 text-xs font-medium leading-4 text-white"
+                    >
+                      처리
+                    </button>
+                  )}
                 </div>
               ) : (
                 <ReportStatusBadge status={report.status} label={report.statusLabel} />

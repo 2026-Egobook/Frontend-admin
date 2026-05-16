@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { PATH } from '@/app/routes/path';
 import ReportStatusBadge from './ReportStatusBadge';
 
 export default function ReportTable({ reports = [] }) {
@@ -44,7 +45,7 @@ export default function ReportTable({ reports = [] }) {
                 <td className="px-6 py-6 align-middle">
                   <button
                     type="button"
-                    onClick={() => navigate(`/reports/${report.contentType}/${report.reportId}`)}
+                    onClick={() => navigate(PATH.REPORT_DETAIL.replace(':contentType', report.contentType).replace(':reportId', report.reportId))}
                     className="w-8 text-center text-sm leading-5 text-black hover:underline"
                   >
                     <span className="block">상세</span>
