@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import AdminLayout from '../layouts/AdminLayout';
 import LoginPage from '../../features/auth/pages/LoginPage';
 import MemberListPage from '../../features/member/pages/MemberListPage';
@@ -8,6 +8,7 @@ import ReportListPage from '../../features/report/pages/ReportListPage';
 import ReportDetailPage from '../../features/report/pages/ReportDetailPage';
 import CrudManagementPage from '@/features/crud/pages/CrudManagementPage';
 import StatisticsPage from '@/features/statistics/pages/StatisticsPage';
+import NotFoundPage from '../pages/NotFoundPage';
 import { PATH } from './path';
 
 export default function Router() {
@@ -26,7 +27,7 @@ export default function Router() {
           <Route path={PATH.STATS} element={<StatisticsPage />} />
         </Route>
 
-        <Route path="*" element={<Navigate to={PATH.MEMBER_LIST} replace />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );
