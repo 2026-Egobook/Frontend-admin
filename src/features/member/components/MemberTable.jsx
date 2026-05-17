@@ -10,9 +10,9 @@ export default function MemberTable({ members }) {
       <table className="w-full border-collapse">
         <thead>
           <tr className="border-b border-neutral-200">
-            <th className="px-12 py-5 text-left text-sm font-medium text-neutral-600">사용자 ID</th>
+            <th className="px-6 py-5 text-left text-sm font-medium text-neutral-600"><span className="whitespace-nowrap">사용자</span><br />ID</th>
             <th className="px-6 py-5 text-left text-sm font-medium text-neutral-600">이메일</th>
-            <th className="px-6 py-5 text-left text-sm font-medium text-neutral-600">닉네임</th>
+            <th className="px-6 py-5 text-left text-sm font-medium text-neutral-600 whitespace-nowrap">닉네임</th>
             <th className="px-6 py-5 text-left text-sm font-medium text-neutral-600">상태</th>
             <th className="px-6 py-5 text-left text-sm font-medium text-neutral-600">
               마지막 로그인
@@ -35,9 +35,9 @@ export default function MemberTable({ members }) {
                 key={`${member.userId}-${index}`}
                 className="border-b border-neutral-200 last:border-b-0"
               >
-                <td className="px-12 py-6 text-sm text-neutral-950">{member.userId}</td>
+                <td className="px-6 py-6 text-sm text-neutral-950">{member.userId}</td>
                 <td className="px-6 py-6 text-sm text-neutral-950">{member.email || '-'}</td>
-                <td className="px-6 py-6 text-sm text-neutral-950">{member.nickname}</td>
+                <td className="px-6 py-6 text-sm text-neutral-950 whitespace-nowrap">{member.nickname}</td>
                 <td className="px-6 py-6">
                   <MemberStatusBadge status={member.status} />
                 </td>
@@ -47,7 +47,7 @@ export default function MemberTable({ members }) {
                   <button
                     type="button"
                     onClick={() => navigate(PATH.MEMBER_DETAIL.replace(':memberId', member.userId))}
-                    className="hover:underline"
+                    className="whitespace-nowrap hover:underline"
                   >
                     상세보기
                   </button>

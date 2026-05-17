@@ -72,7 +72,7 @@ export default function MemberSummaryCard({ member, stats }) {
         <div className="flex flex-col gap-4">
           <h2 className="text-lg font-semibold leading-7 text-neutral-950">활동 통계</h2>
 
-          <div className="grid grid-cols-4 gap-x-6 gap-y-4">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
             <StatField label="일기 작성 수" value={activityCount.diary} large />
             <StatField label="편지 작성 수" value={activityCount.letter} large />
             <StatField label="질문 답변 수" value={activityCount.questionAnswer} large />
@@ -110,7 +110,7 @@ export default function MemberSummaryCard({ member, stats }) {
           <div className="flex flex-col gap-2">
             <span className="text-sm font-normal leading-5 text-neutral-600">능력치별 레벨</span>
 
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
               {abilityItems.map((item) => (
                 <div
                   key={item.label}
