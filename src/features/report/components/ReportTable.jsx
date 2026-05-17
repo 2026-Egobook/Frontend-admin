@@ -10,8 +10,8 @@ export default function ReportTable({ reports = [] }) {
       <table className="w-full border-collapse">
         <thead>
           <tr className="h-20 border-b border-neutral-200 bg-white text-left">
-            <th className="px-6 text-sm font-medium leading-5 text-neutral-600">신고 ID</th>
-            <th className="px-6 text-sm font-medium leading-5 text-neutral-600">콘텐츠 유형</th>
+            <th className="w-20 px-4 text-sm font-medium leading-5 text-neutral-600 whitespace-nowrap">신고 ID</th>
+            <th className="px-4 text-sm font-medium leading-5 text-neutral-600 whitespace-nowrap">콘텐츠 유형</th>
             <th className="px-6 text-sm font-medium leading-5 text-neutral-600">내용</th>
             <th className="px-6 text-sm font-medium leading-5 text-neutral-600">신고자 ID</th>
             <th className="px-6 text-sm font-medium leading-5 text-neutral-600">사유</th>
@@ -32,8 +32,8 @@ export default function ReportTable({ reports = [] }) {
           ) : (
             reports.map((report) => (
               <tr key={`${report.contentType}-${report.reportId}`} className="border-b border-neutral-200">
-                <td className="px-6 py-6 text-sm text-neutral-950">{report.reportId}</td>
-                <td className="px-6 py-6 text-sm text-neutral-950">{report.contentTypeLabel}</td>
+                <td className="px-4 py-6 text-sm text-neutral-950">{report.reportId}</td>
+                <td className="px-4 py-6 text-sm text-neutral-950 whitespace-nowrap">{report.contentTypeLabel}</td>
                 <td className="px-6 py-6 text-sm text-neutral-950">{report.content}</td>
                 <td className="px-6 py-6 text-sm text-neutral-950">{report.authorId}</td>
                 <td className="px-6 py-6 text-sm text-neutral-950">{report.reason}</td>
