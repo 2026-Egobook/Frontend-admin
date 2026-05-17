@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 import Input from '@/shared/components/ui/Input';
 import Button from '@/shared/components/ui/Button';
 import useLogin from '@/features/auth/hooks/useLogin';
 
 export default function LoginForm({ onSwitchToRegister }) {
   const [form, setForm] = useState({ adminId: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
   const { isLoading, error, submitLogin } = useLogin();
 
   const handleChange = (event) => {
@@ -43,14 +45,25 @@ export default function LoginForm({ onSwitchToRegister }) {
         <label htmlFor="password" className="text-sm font-medium leading-5 text-neutral-950">
           비밀번호
         </label>
-        <Input
-          id="password"
-          name="password"
-          type="password"
-          placeholder="비밀번호를 입력하세요"
-          value={form.password}
-          onChange={handleChange}
-        />
+        <div className="relative">
+          <Input
+            id="password"
+            name="password"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="비밀번호를 입력하세요"
+            value={form.password}
+            onChange={handleChange}
+            className="pr-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
+            tabIndex={-1}
+          >
+            {showPassword ? <FiEye className="h-4 w-4" /> : <FiEyeOff className="h-4 w-4" />}
+          </button>
+        </div>
       </div>
 
       {error && (
