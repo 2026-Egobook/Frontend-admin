@@ -6,12 +6,22 @@ import LetterGiveUpStatus from './LetterGiveUpStatus';
 import { useDiaryStats, useLetterGiveUpStats } from '../../hooks/useStatistics';
 import Spinner from '@/shared/components/ui/Spinner';
 
-export default function ContentMetricSection() {
-  const [diaryStartDate, setDiaryStartDate] = useState(new Date('2026-01-01'));
-  const [diaryEndDate, setDiaryEndDate] = useState(new Date('2026-04-30'));
+function getThisMonthRange() {
+  const now = new Date();
+  return {
+    start: new Date(now.getFullYear(), now.getMonth(), 1),
+    end: now,
+  };
+}
 
-  const [giveUpStartDate, setGiveUpStartDate] = useState(new Date('2026-01-01'));
-  const [giveUpEndDate, setGiveUpEndDate] = useState(new Date('2026-04-30'));
+export default function ContentMetricSection() {
+  const { start, end } = getThisMonthRange();
+
+  const [diaryStartDate, setDiaryStartDate] = useState(start);
+  const [diaryEndDate, setDiaryEndDate] = useState(end);
+
+  const [giveUpStartDate, setGiveUpStartDate] = useState(start);
+  const [giveUpEndDate, setGiveUpEndDate] = useState(end);
 
   const { data: diaryData, isLoading: diaryLoading } = useDiaryStats({ startDate: diaryStartDate, endDate: diaryEndDate });
   const { data: giveUpData, isLoading: giveUpLoading } = useLetterGiveUpStats({ startDate: giveUpStartDate, endDate: giveUpEndDate });

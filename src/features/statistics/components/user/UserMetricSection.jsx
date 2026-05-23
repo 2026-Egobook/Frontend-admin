@@ -7,12 +7,22 @@ import RetentionCard from './RetentionCard';
 import { useDauMauStats, useJoinWithdrawStats, useRetentionStats } from '../../hooks/useStatistics';
 import Spinner from '@/shared/components/ui/Spinner';
 
-export default function UserMetricSection() {
-  const [dauStartDate, setDauStartDate] = useState(new Date('2026-04-01'));
-  const [dauEndDate, setDauEndDate] = useState(new Date('2026-04-30'));
+function getThisMonthRange() {
+  const now = new Date();
+  return {
+    start: new Date(now.getFullYear(), now.getMonth(), 1),
+    end: now,
+  };
+}
 
-  const [joinStartDate, setJoinStartDate] = useState(new Date('2026-01-01'));
-  const [joinEndDate, setJoinEndDate] = useState(new Date('2026-04-30'));
+export default function UserMetricSection() {
+  const { start, end } = getThisMonthRange();
+
+  const [dauStartDate, setDauStartDate] = useState(start);
+  const [dauEndDate, setDauEndDate] = useState(end);
+
+  const [joinStartDate, setJoinStartDate] = useState(start);
+  const [joinEndDate, setJoinEndDate] = useState(end);
   const [joinUnit, setJoinUnit] = useState('MONTH');
 
   const { data: dauData, isLoading: dauLoading } = useDauMauStats({ startDate: dauStartDate, endDate: dauEndDate });
