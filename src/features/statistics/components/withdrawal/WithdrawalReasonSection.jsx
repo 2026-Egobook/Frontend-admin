@@ -6,9 +6,19 @@ import WithdrawalReasonList from './WithdrawalReasonList';
 import { useWithdrawReasonStats } from '../../hooks/useStatistics';
 import Spinner from '@/shared/components/ui/Spinner';
 
+function getThisMonthRange() {
+  const now = new Date();
+  return {
+    start: new Date(now.getFullYear(), now.getMonth(), 1),
+    end: now,
+  };
+}
+
 export default function WithdrawalReasonSection() {
-  const [startDate, setStartDate] = useState(new Date('2026-01-01'));
-  const [endDate, setEndDate] = useState(new Date('2026-04-30'));
+  const { start, end } = getThisMonthRange();
+
+  const [startDate, setStartDate] = useState(start);
+  const [endDate, setEndDate] = useState(end);
 
   const { data, isLoading } = useWithdrawReasonStats({ startDate, endDate });
 
