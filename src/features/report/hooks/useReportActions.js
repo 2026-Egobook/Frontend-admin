@@ -1,17 +1,16 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  applyReportSanction,
+  approveReport,
   deleteReportedContent,
-  rejectReportGroup,
+  rejectReport,
   saveReportMemo,
-  updateReportStatus,
 } from '../api/reportApi';
 
-export function useUpdateReportStatus(reportGroupId) {
+export function useApproveReport(reportGroupId) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: updateReportStatus,
+    mutationFn: approveReport,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reportDetail', reportGroupId] });
       queryClient.invalidateQueries({ queryKey: ['reportList'] });
@@ -19,23 +18,11 @@ export function useUpdateReportStatus(reportGroupId) {
   });
 }
 
-export function useRejectReportGroup(reportGroupId) {
+export function useRejectReport(reportGroupId) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: rejectReportGroup,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reportDetail', reportGroupId] });
-      queryClient.invalidateQueries({ queryKey: ['reportList'] });
-    },
-  });
-}
-
-export function useApplyReportSanction(reportGroupId) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: applyReportSanction,
+    mutationFn: rejectReport,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reportDetail', reportGroupId] });
       queryClient.invalidateQueries({ queryKey: ['reportList'] });

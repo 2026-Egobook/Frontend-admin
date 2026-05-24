@@ -172,8 +172,20 @@ export async function deleteReportedContent({ contentType, contentId }) {
   }
 }
 
-// 아직 스펙 미제공 — 추후 연동
-export async function updateReportStatus() {}
-export async function rejectReportGroup() {}
-export async function applyReportSanction() {}
+const CONTENT_TYPE_PATH = {
+  LETTER: 'letters',
+  REPLY: 'replies',
+  ANSWER: 'answers',
+};
+
+export async function approveReport({ contentType, reportId }) {
+  const path = CONTENT_TYPE_PATH[contentType];
+  await publicAPI.patch(`/admin/reports/${path}/${reportId}/approve`);
+}
+
+export async function rejectReport({ contentType, reportId }) {
+  const path = CONTENT_TYPE_PATH[contentType];
+  await publicAPI.patch(`/admin/reports/${path}/${reportId}/reject`);
+}
+
 export async function saveReportMemo() {}
