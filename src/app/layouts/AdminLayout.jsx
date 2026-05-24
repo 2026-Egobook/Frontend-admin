@@ -46,7 +46,7 @@ function AdminLayout() {
           </nav>
         </aside>
 
-        <main className="flex-1 bg-white px-8 py-8">
+        <main className="flex-1 bg-white px-8 pt-8 pb-24">
           <Outlet />
         </main>
       </div>

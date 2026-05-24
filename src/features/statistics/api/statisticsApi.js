@@ -10,9 +10,9 @@ function formatDate(date) {
 
 const WITHDRAW_REASON_LABEL = {
   NOT_USED_OFTEN: '자주 사용 안함',
-  LACK_OF_FUNCTION: '기능 부족',
-  INCONVENIENT: '앱 사용 불편',
-  HARD_TO_EARN_INK: '잉크 모으기 어려움',
+  LACK_OF_CONTENT: '기능 부족',
+  INCONVENIENT_UI: '앱 사용 불편',
+  DIFFICULT_TO_COLLECT_INK: '잉크 모으기 어려움',
   OTHER: '기타',
 };
 
@@ -41,8 +41,8 @@ export async function getDauMauStats({ startDate, endDate }) {
 export async function getRetentionStats() {
   const { data } = await publicAPI.get('/admin/stats/users/retention');
   return {
-    day7: toPercent(data.data.day7RetentionRate),
-    day30: toPercent(data.data.day30RetentionRate),
+    day7: data.data.day7RetentionRate,
+    day30: data.data.day30RetentionRate,
   };
 }
 
@@ -81,7 +81,7 @@ export async function getLetterGiveUpStats({ startDate, endDate }) {
   return {
     totalLetterCount: result.total,
     giveUpCount: result.giveUp,
-    giveUpRate: toPercent(result.giveUpRate),
+    giveUpRate: result.giveUpRate,
   };
 }
 

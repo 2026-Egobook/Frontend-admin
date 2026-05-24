@@ -3,7 +3,7 @@ import BaseModal from '@/shared/components/ui/BaseModal';
 export default function ReportStatusModal({ open, report, processing, onClose, onResolve, onRefuse }) {
   return (
     <BaseModal open={open} onClose={onClose}>
-      <div className="flex w-96 flex-col gap-4 px-6 py-6">
+      <div className="flex flex-col gap-4 px-6 py-6">
         <h3 className="text-lg font-semibold leading-7 text-neutral-950">신고 상태 변경</h3>
 
         <div className="text-sm font-normal leading-5 text-neutral-600">

@@ -7,13 +7,6 @@ const DOMAIN_OPTIONS = [
   { label: '질문 답변', value: 'QUESTION_ANSWER' },
 ];
 
-const REASON_OPTIONS = [
-  { label: '비속어 및 모욕', value: 'ABUSE' },
-  { label: '광고 및 스팸', value: 'SPAM' },
-  { label: '부적절한 콘텐츠', value: 'INAPPROPRIATE' },
-  { label: '기타', value: 'OTHER' },
-];
-
 export default function ApplySanctionModal({ open, onClose, onSubmit }) {
   const [domainType, setDomainType] = useState('');
   const [reason, setReason] = useState('');
@@ -53,13 +46,17 @@ export default function ApplySanctionModal({ open, onClose, onSubmit }) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium leading-5 text-neutral-950">제재 사유</label>
+          <label className="text-sm font-medium leading-5 text-neutral-950">
+            제재 사유 <span className="text-xs font-normal text-neutral-500">(최대 50자)</span>
+          </label>
 
-          <DropdownSelect
+          <input
+            type="text"
             value={reason}
-            placeholder="선택하기"
-            options={REASON_OPTIONS}
-            onChange={setReason}
+            onChange={(e) => setReason(e.target.value)}
+            maxLength={50}
+            placeholder="제재 사유를 입력하세요"
+            className="h-10 w-full rounded border border-neutral-300 px-3 text-sm text-neutral-950 outline-none focus:border-black"
           />
         </div>
 

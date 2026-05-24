@@ -14,8 +14,12 @@ import { resendDailyPraiseFailures, resendWeeklyReportFailures } from '../api/co
 export default function ContentManagementPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') ?? 'weeklyReport';
-  const [startDate, setStartDate] = useState(new Date('2026-04-01'));
-  const [endDate, setEndDate] = useState(new Date('2026-04-09'));
+  const today = new Date();
+  const sevenDaysAgo = new Date(today);
+  sevenDaysAgo.setDate(today.getDate() - 6);
+
+  const [startDate, setStartDate] = useState(sevenDaysAgo);
+  const [endDate, setEndDate] = useState(today);
 
   const { data: dailyPraiseData, isLoading: isDailyPraiseLoading } = useDailyPraiseStats({
     startDate,
@@ -48,9 +52,12 @@ export default function ContentManagementPage() {
     endDate,
   });
 
+  const [badWordType, setBadWordType] = useState('ALL');
+
   const { data: badWordData, isLoading: isBadWordLoading } = useBadWordStats({
     startDate,
     endDate,
+    type: badWordType,
   });
 
   return (
@@ -128,6 +135,8 @@ export default function ContentManagementPage() {
               endDate={endDate}
               onStartDateChange={setStartDate}
               onEndDateChange={setEndDate}
+              type={badWordType}
+              onTypeChange={setBadWordType}
             />
           )}
         </>

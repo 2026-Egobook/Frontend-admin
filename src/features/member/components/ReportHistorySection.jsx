@@ -29,6 +29,7 @@ const REPORT_TYPE_BADGE = {
   REPORTED: 'bg-orange-100 text-orange-800',
 };
 
+
 function hasPending(reports) {
   return reports.some((r) => r.reportStatus === 'PENDING');
 }

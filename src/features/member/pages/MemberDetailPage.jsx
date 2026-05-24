@@ -78,7 +78,24 @@ export default function MemberDetailPage() {
 
   const reportLoading = letterLoading || replyLoading || answerLoading;
 
-  const summary = letterData?.summary;
+  // 3개 도메인 쿼리의 summary를 합산해 사용자 전체 집계값 산출
+  const summary = (letterData?.summary || replyData?.summary || answerData?.summary)
+    ? {
+        totalReportCount:
+          (letterData?.summary?.totalReportCount ?? 0) +
+          (replyData?.summary?.totalReportCount ?? 0) +
+          (answerData?.summary?.totalReportCount ?? 0),
+        totalReportedCount:
+          (letterData?.summary?.totalReportedCount ?? 0) +
+          (replyData?.summary?.totalReportedCount ?? 0) +
+          (answerData?.summary?.totalReportedCount ?? 0),
+        pastSuspendedCount:
+          letterData?.summary?.pastSuspendedCount ??
+          replyData?.summary?.pastSuspendedCount ??
+          answerData?.summary?.pastSuspendedCount ??
+          0,
+      }
+    : undefined;
 
   const groupedReports = useMemo(() => {
     const allReports = [

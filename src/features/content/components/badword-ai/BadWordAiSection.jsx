@@ -56,23 +56,52 @@ function BlockedTextCard({ item }) {
   );
 }
 
+const TYPE_OPTIONS = [
+  { label: '전체', value: 'ALL' },
+  { label: '편지', value: 'LETTER' },
+  { label: '답장', value: 'REPLY' },
+  { label: '칭찬', value: 'PRAISE' },
+];
+
 export default function BadWordAiSection({
   data,
   startDate,
   endDate,
   onStartDateChange,
   onEndDateChange,
+  type = 'ALL',
+  onTypeChange,
 }) {
   return (
     <div className="flex flex-col gap-6 rounded-[10px] border border-neutral-200 bg-white p-6">
       <h3 className="text-lg font-semibold leading-7 text-neutral-950">차단 현황</h3>
 
-      <DateRangeFilter
-        startDate={startDate}
-        endDate={endDate}
-        onStartDateChange={onStartDateChange}
-        onEndDateChange={onEndDateChange}
-      />
+      <div className="flex flex-wrap items-center gap-4">
+        <DateRangeFilter
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={onStartDateChange}
+          onEndDateChange={onEndDateChange}
+        />
+
+        <div className="flex overflow-hidden rounded border border-neutral-300">
+          {TYPE_OPTIONS.map(({ label, value }) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => onTypeChange?.(value)}
+              className={[
+                'h-8 px-3 text-sm font-medium transition-colors',
+                type === value
+                  ? 'bg-black text-white'
+                  : 'bg-white text-neutral-600 hover:bg-neutral-50',
+              ].join(' ')}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="grid grid-cols-2 gap-4">
         <SummaryCard label="전체 차단 건수" value={data.summary.blockedCount} />

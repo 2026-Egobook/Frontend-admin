@@ -79,6 +79,10 @@ export default function ItemTable({ rows = [], onEdit, onDelete }) {
                         src={row.imageUrl}
                         alt={row.name}
                         className="h-full w-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.parentElement.classList.add('bg-neutral-100');
+                        }}
                       />
                     </button>
                   ) : (

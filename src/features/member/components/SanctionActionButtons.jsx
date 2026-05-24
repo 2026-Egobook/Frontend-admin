@@ -1,6 +1,6 @@
 export default function SanctionActionButtons({ onOpenApply, onOpenCancel }) {
   return (
-    <section className="flex flex-col gap-4 border-t border-neutral-200 pt-6">
+    <section className="relative z-10 flex flex-col gap-4 border-t border-neutral-200 pt-6">
       <h2 className="text-lg font-semibold leading-7 text-neutral-950">제재 적용</h2>
 
       <div className="flex gap-2">
