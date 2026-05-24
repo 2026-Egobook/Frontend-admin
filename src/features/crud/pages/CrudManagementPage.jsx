@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import Toast from '@/shared/components/ui/Toast';
 import CrudTabMenu from '../components/common/CrudTabMenu';
 import PsychologyKnowledgeTable from '../components/psychology/PsychologyKnowledgeTable';
 import PsychologyKnowledgeModal from '../components/psychology/PsychologyKnowledgeModal';
@@ -22,7 +23,7 @@ import {
   useUpdateQuestionDummy,
 } from '../hooks/useQuestionDummy';
 import DropdownSelect from '@/shared/components/ui/DropdownSelect';
-import { useChangeItemStatus, useCreateItem, useDeleteItem, useItemList, useUpdateItem } from '../hooks/useItem';
+import { useCreateItem, useDeleteItem, useItemList, useUpdateItem } from '../hooks/useItem';
 
 export default function CrudManagementPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -32,6 +33,9 @@ export default function CrudManagementPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [itemCategory, setItemCategory] = useState('');
+  const [toastMessage, setToastMessage] = useState('');
+
+  const showToast = useCallback((msg) => setToastMessage(msg), []);
 
   const sentinelRef = useRef(null);
 
@@ -71,7 +75,6 @@ export default function CrudManagementPage() {
   const updateQuestionMutation = useUpdateQuestionDummy();
   const deleteQuestionMutation = useDeleteQuestionDummy();
 
-  const changeItemStatusMutation = useChangeItemStatus();
   const createItemMutation = useCreateItem();
   const updateItemMutation = useUpdateItem();
   const deleteItemMutation = useDeleteItem();
@@ -153,34 +156,33 @@ export default function CrudManagementPage() {
   const handleSubmitPsychology = async (form) => {
     if (selectedRow) {
       await updatePsychologyMutation.mutateAsync(form);
+      showToast('수정에 성공했습니다.');
     } else {
       await createPsychologyMutation.mutateAsync(form);
+      showToast('등록에 성공했습니다.');
     }
-
     handleCloseFormModal();
   };
 
   const handleSubmitQuestion = async (form) => {
     if (selectedRow) {
       await updateQuestionMutation.mutateAsync(form);
+      showToast('수정에 성공했습니다.');
     } else {
       await createQuestionMutation.mutateAsync(form);
+      showToast('등록에 성공했습니다.');
     }
-
     handleCloseFormModal();
-  };
-
-  const handleItemStatusChange = async (id, status) => {
-    await changeItemStatusMutation.mutateAsync({ id, status });
   };
 
   const handleSubmitItem = async (form) => {
     if (selectedRow) {
       await updateItemMutation.mutateAsync(form);
+      showToast('수정에 성공했습니다.');
     } else {
       await createItemMutation.mutateAsync(form);
+      showToast('등록에 성공했습니다.');
     }
-
     handleCloseFormModal();
   };
 
@@ -200,6 +202,7 @@ export default function CrudManagementPage() {
     }
 
     handleCloseDeleteModal();
+    showToast('삭제에 성공했습니다.');
   };
 
   const isFetchingNext =
@@ -332,6 +335,8 @@ export default function CrudManagementPage() {
         onClose={handleCloseDeleteModal}
         onConfirm={handleDelete}
       />
+
+      <Toast message={toastMessage} onClose={() => setToastMessage('')} />
     </>
   );
 }

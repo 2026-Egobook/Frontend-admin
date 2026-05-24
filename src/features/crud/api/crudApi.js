@@ -76,6 +76,7 @@ function normalizeItem(item) {
   return {
     id: item.id,
     name: item.name,
+    path: item.path,
     category: item.category,
     price: item.price,
     imageUrl: item.imageUrl,
