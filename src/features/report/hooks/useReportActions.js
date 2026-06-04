@@ -6,49 +6,49 @@ import {
   saveReportMemo,
 } from '../api/reportApi';
 
-export function useApproveReport(reportGroupId) {
+export function useApproveReport() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: approveReport,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reportDetail', reportGroupId] });
+      queryClient.invalidateQueries({ queryKey: ['reportDetail'] });
       queryClient.invalidateQueries({ queryKey: ['reportList'] });
     },
   });
 }
 
-export function useRejectReport(reportGroupId) {
+export function useRejectReport() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: rejectReport,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reportDetail', reportGroupId] });
+      queryClient.invalidateQueries({ queryKey: ['reportDetail'] });
       queryClient.invalidateQueries({ queryKey: ['reportList'] });
     },
   });
 }
 
-export function useDeleteReportedContent(reportGroupId) {
+export function useDeleteReportedContent() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: deleteReportedContent,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reportDetail', reportGroupId] });
+      queryClient.invalidateQueries({ queryKey: ['reportDetail'] });
       queryClient.invalidateQueries({ queryKey: ['reportList'] });
     },
   });
 }
 
-export function useSaveReportMemo(reportGroupId) {
+export function useSaveReportMemo() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: saveReportMemo,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reportDetail', reportGroupId] });
+      queryClient.invalidateQueries({ queryKey: ['reportDetail'] });
     },
   });
 }

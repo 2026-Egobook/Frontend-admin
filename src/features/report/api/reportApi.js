@@ -13,7 +13,7 @@ const STATUS_LABEL = {
   PENDING: '미처리',
   SANCTION_COMPLETED: '제재완료',
   REJECTED: '반려',
-  RESOLVED: '처리완료',
+  RESOLVED: '제재완료',
   REFUSED: '반려',
 };
 
@@ -124,7 +124,7 @@ export async function getReportDetail(contentType, reportId) {
       contentId: raw.letterId,
       totalReportCount: raw.reportCount,
       originalContent: raw.letterContent,
-      memo: '',
+      memo: raw.adminMemo ?? '',
       reports: [{ reportId: raw.reportId, reason: REASON_LABEL[raw.reason] ?? raw.reason, description: raw.description, reporterId: raw.reporterId, createdAt: raw.createdAt, status: raw.status ?? 'PENDING', statusLabel: STATUS_LABEL[raw.status] ?? '미처리' }],
     });
   } else if (contentType === 'REPLY') {
@@ -138,7 +138,7 @@ export async function getReportDetail(contentType, reportId) {
       contentId: raw.replyId,
       totalReportCount: raw.reportCount,
       originalContent: raw.replyContent,
-      memo: '',
+      memo: raw.adminMemo ?? '',
       reports: [{ reportId: raw.reportId, reason: REASON_LABEL[raw.reason] ?? raw.reason, description: raw.description, reporterId: raw.reporterId, createdAt: raw.createdAt, status: raw.status ?? 'PENDING', statusLabel: STATUS_LABEL[raw.status] ?? '미처리' }],
     });
   } else if (contentType === 'ANSWER') {
@@ -152,7 +152,7 @@ export async function getReportDetail(contentType, reportId) {
       contentId: raw.answerId,
       totalReportCount: raw.reportCount,
       originalContent: raw.answerContent,
-      memo: '',
+      memo: raw.adminMemo ?? '',
       reports: [{ reportId: raw.reportId, reason: REASON_LABEL[raw.reason] ?? raw.reason, description: raw.description, reporterId: raw.reporterId ?? raw.reporterNickname, createdAt: raw.reportedAt ?? raw.createdAt, status: raw.status ?? 'PENDING', statusLabel: STATUS_LABEL[raw.status] ?? '미처리' }],
     });
   } else {
@@ -188,4 +188,15 @@ export async function rejectReport({ contentType, reportId }) {
   await publicAPI.patch(`/admin/reports/${path}/${reportId}/reject`);
 }
 
-export async function saveReportMemo() {}
+const MEMO_TYPE_MAP = {
+  LETTER: 'LETTER',
+  REPLY: 'LETTER_REPLY',
+  ANSWER: 'ANSWER',
+};
+
+export async function saveReportMemo({ reportId, contentType, adminMemo }) {
+  await publicAPI.patch(`/admin/reports/${reportId}/memo`, {
+    reportMemoType: MEMO_TYPE_MAP[contentType],
+    adminMemo,
+  });
+}

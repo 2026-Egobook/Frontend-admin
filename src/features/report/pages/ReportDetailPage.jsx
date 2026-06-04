@@ -6,8 +6,10 @@ import {
   useDeleteReportedContent,
   useApproveReport,
   useRejectReport,
+  useSaveReportMemo,
 } from '../hooks/useReportActions';
 import Spinner from '@/shared/components/ui/Spinner';
+import Toast from '@/shared/components/ui/Toast';
 import ReportDetailHeader from '../components/ReportDetailHeader';
 import ReportHistoryList from '../components/ReportHistoryList';
 import ReportMemoForm from '../components/ReportMemoForm';
@@ -19,13 +21,15 @@ export default function ReportDetailPage() {
   const { contentType, reportId } = useParams();
 
   const { data: detail, isLoading } = useReportDetail(contentType, reportId);
-  const deleteContentMutation = useDeleteReportedContent(reportId);
-  const approveMutation = useApproveReport(reportId);
-  const rejectMutation = useRejectReport(reportId);
+  const deleteContentMutation = useDeleteReportedContent();
+  const approveMutation = useApproveReport();
+  const rejectMutation = useRejectReport();
+  const saveMemoMutation = useSaveReportMemo();
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [processModal, setProcessModal] = useState({ open: false, report: null });
   const [processing, setProcessing] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   if (isLoading) {
     return <Spinner />;
@@ -51,6 +55,8 @@ export default function ReportDetailPage() {
         reportId: processModal.report?.reportId,
       });
       setProcessModal({ open: false, report: null });
+    } catch {
+      // 실패 시 모달 유지, 상태 변경 없음
     } finally {
       setProcessing(false);
     }
@@ -64,9 +70,16 @@ export default function ReportDetailPage() {
         reportId: processModal.report?.reportId,
       });
       setProcessModal({ open: false, report: null });
+    } catch {
+      // 실패 시 모달 유지, 상태 변경 없음
     } finally {
       setProcessing(false);
     }
+  };
+
+  const handleSaveMemo = async (adminMemo) => {
+    await saveMemoMutation.mutateAsync({ reportId, contentType, adminMemo });
+    setToastMessage('메모가 저장되었습니다.');
   };
 
   return (
@@ -107,7 +120,11 @@ export default function ReportDetailPage() {
 
           <ReportHistoryList reports={detail.reports} onProcess={handleProcessReport} />
 
-          <ReportMemoForm initialMemo={detail.memo} onSave={() => {}} />
+          <ReportMemoForm
+            initialMemo={detail.memo}
+            isSaving={saveMemoMutation.isPending}
+            onSave={handleSaveMemo}
+          />
         </div>
       </div>
 
@@ -123,6 +140,8 @@ export default function ReportDetailPage() {
           navigate(-1);
         }}
       />
+
+      <Toast message={toastMessage} onClose={() => setToastMessage('')} />
 
       <ReportStatusChangeModal
         open={processModal.open}

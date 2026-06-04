@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function ReportMemoForm({ initialMemo = '', onSave }) {
+export default function ReportMemoForm({ initialMemo = '', isSaving = false, onSave }) {
   const [memo, setMemo] = useState(initialMemo);
 
   return (
@@ -17,9 +17,10 @@ export default function ReportMemoForm({ initialMemo = '', onSave }) {
       <button
         type="button"
         onClick={() => onSave?.(memo)}
-        className="h-10 w-24 rounded bg-black text-base font-medium leading-6 text-white"
+        disabled={isSaving}
+        className="h-10 w-24 rounded bg-black text-base font-medium leading-6 text-white disabled:opacity-60"
       >
-        메모 저장
+        {isSaving ? '저장 중...' : '메모 저장'}
       </button>
     </section>
   );
