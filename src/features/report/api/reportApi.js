@@ -17,6 +17,30 @@ const STATUS_LABEL = {
   REFUSED: '반려',
 };
 
+const CONTENT_CONFIG = {
+  LETTER: {
+    path: 'letters',
+    idField: 'letterId',
+    contentField: 'letterContent',
+    label: '편지',
+    idLabel: '편지 ID',
+  },
+  REPLY: {
+    path: 'replies',
+    idField: 'replyId',
+    contentField: 'replyContent',
+    label: '편지 답장',
+    idLabel: '답장 ID',
+  },
+  ANSWER: {
+    path: 'answers',
+    idField: 'answerId',
+    contentField: 'answerContent',
+    label: '질문 답변',
+    idLabel: '답변 ID',
+  },
+};
+
 function normalizeLetterItem(item) {
   return {
     reportId: item.reportId,
@@ -98,7 +122,7 @@ export async function getReportList({ contentType = 'ALL', page = 1, size = 20 }
   const answers = (unwrap(answerRes).content ?? []).map(normalizeAnswerItem);
 
   const merged = [...letters, ...replies, ...answers].sort(
-    (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
 
   const hasNext =
@@ -109,57 +133,85 @@ export async function getReportList({ contentType = 'ALL', page = 1, size = 20 }
   return { content: merged, hasNext };
 }
 
-export async function getReportDetail(contentType, reportId) {
-  let res;
-  let normalizer;
+// export async function getReportDetail(contentType, reportId) {
+//   let res;
+//   let normalizer;
 
-  if (contentType === 'LETTER') {
-    res = await publicAPI.get(`/admin/reports/letters/${reportId}`);
-    normalizer = (raw) => ({
-      reportGroupId: raw.reportId,
-      contentType: 'LETTER',
-      contentTypeLabel: '편지',
-      targetContentId: raw.letterId,
-      targetContentIdLabel: '편지 ID',
-      contentId: raw.letterId,
-      totalReportCount: raw.reportCount,
-      originalContent: raw.letterContent,
-      memo: raw.adminMemo ?? '',
-      reports: [{ reportId: raw.reportId, reason: REASON_LABEL[raw.reason] ?? raw.reason, description: raw.description, reporterId: raw.reporterId, createdAt: raw.createdAt, status: raw.status ?? 'PENDING', statusLabel: STATUS_LABEL[raw.status] ?? '미처리' }],
-    });
-  } else if (contentType === 'REPLY') {
-    res = await publicAPI.get(`/admin/reports/replies/${reportId}`);
-    normalizer = (raw) => ({
-      reportGroupId: raw.reportId,
-      contentType: 'REPLY',
-      contentTypeLabel: '편지 답장',
-      targetContentId: raw.replyId,
-      targetContentIdLabel: '답장 ID',
-      contentId: raw.replyId,
-      totalReportCount: raw.reportCount,
-      originalContent: raw.replyContent,
-      memo: raw.adminMemo ?? '',
-      reports: [{ reportId: raw.reportId, reason: REASON_LABEL[raw.reason] ?? raw.reason, description: raw.description, reporterId: raw.reporterId, createdAt: raw.createdAt, status: raw.status ?? 'PENDING', statusLabel: STATUS_LABEL[raw.status] ?? '미처리' }],
-    });
-  } else if (contentType === 'ANSWER') {
-    res = await publicAPI.get(`/admin/reports/answers/${reportId}`);
-    normalizer = (raw) => ({
-      reportGroupId: raw.reportId,
-      contentType: 'ANSWER',
-      contentTypeLabel: '질문 답변',
-      targetContentId: raw.answerId,
-      targetContentIdLabel: '답변 ID',
-      contentId: raw.answerId,
-      totalReportCount: raw.reportCount,
-      originalContent: raw.answerContent,
-      memo: raw.adminMemo ?? '',
-      reports: [{ reportId: raw.reportId, reason: REASON_LABEL[raw.reason] ?? raw.reason, description: raw.description, reporterId: raw.reporterId ?? raw.reporterNickname, createdAt: raw.reportedAt ?? raw.createdAt, status: raw.status ?? 'PENDING', statusLabel: STATUS_LABEL[raw.status] ?? '미처리' }],
-    });
-  } else {
-    return null;
-  }
+//   if (contentType === 'LETTER') {
+//     res = await publicAPI.get(`/admin/reports/letters/${reportId}`);
+//     normalizer = (raw) => ({
+//       reportGroupId: raw.reportId,
+//       contentType: 'LETTER',
+//       contentTypeLabel: '편지',
+//       targetContentId: raw.letterId,
+//       targetContentIdLabel: '편지 ID',
+//       contentId: raw.letterId,
+//       totalReportCount: raw.reportCount,
+//       originalContent: raw.letterContent,
+//       memo: raw.adminMemo ?? '',
+//       reports: [{ reportId: raw.reportId, reason: REASON_LABEL[raw.reason] ?? raw.reason, description: raw.description, reporterId: raw.reporterId, createdAt: raw.createdAt, status: raw.status ?? 'PENDING', statusLabel: STATUS_LABEL[raw.status] ?? '미처리' }],
+//     });
+//   } else if (contentType === 'REPLY') {
+//     res = await publicAPI.get(`/admin/reports/replies/${reportId}`);
+//     normalizer = (raw) => ({
+//       reportGroupId: raw.reportId,
+//       contentType: 'REPLY',
+//       contentTypeLabel: '편지 답장',
+//       targetContentId: raw.replyId,
+//       targetContentIdLabel: '답장 ID',
+//       contentId: raw.replyId,
+//       totalReportCount: raw.reportCount,
+//       originalContent: raw.replyContent,
+//       memo: raw.adminMemo ?? '',
+//       reports: [{ reportId: raw.reportId, reason: REASON_LABEL[raw.reason] ?? raw.reason, description: raw.description, reporterId: raw.reporterId, createdAt: raw.createdAt, status: raw.status ?? 'PENDING', statusLabel: STATUS_LABEL[raw.status] ?? '미처리' }],
+//     });
+//   } else if (contentType === 'ANSWER') {
+//     res = await publicAPI.get(`/admin/reports/answers/${reportId}`);
+//     normalizer = (raw) => ({
+//       reportGroupId: raw.reportId,
+//       contentType: 'ANSWER',
+//       contentTypeLabel: '질문 답변',
+//       targetContentId: raw.answerId,
+//       targetContentIdLabel: '답변 ID',
+//       contentId: raw.answerId,
+//       totalReportCount: raw.reportCount,
+//       originalContent: raw.answerContent,
+//       memo: raw.adminMemo ?? '',
+//       reports: [{ reportId: raw.reportId, reason: REASON_LABEL[raw.reason] ?? raw.reason, description: raw.description, reporterId: raw.reporterId ?? raw.reporterNickname, createdAt: raw.reportedAt ?? raw.createdAt, status: raw.status ?? 'PENDING', statusLabel: STATUS_LABEL[raw.status] ?? '미처리' }],
+//     });
+//   } else {
+//     return null;
+//   }
 
-  return normalizer(unwrap(res));
+//   return normalizer(unwrap(res));
+// }
+export async function getReportDetail(contentType, contentId) {
+  const config = CONTENT_CONFIG[contentType];
+  if (!config) return null;
+
+  const res = await publicAPI.get(`/admin/reports/${config.path}/${contentId}`);
+  const raw = unwrap(res);
+
+  return {
+    reportGroupId: raw[config.idField],
+    contentType,
+    contentTypeLabel: config.label,
+    targetContentId: raw[config.idField],
+    targetContentIdLabel: config.idLabel,
+    contentId: raw[config.idField],
+    totalReportCount: raw.reportCount,
+    originalContent: raw[config.contentField],
+    memo: raw.adminMemo ?? '',
+    reports: (raw.reports ?? []).map((r) => ({
+      reportId: r.reportId,
+      reason: REASON_LABEL[r.reason] ?? r.reason,
+      description: r.description,
+      reporterId: r.reporterId,
+      createdAt: r.createdAt,
+      status: r.status ?? 'PENDING',
+      statusLabel: STATUS_LABEL[r.status] ?? '미처리',
+    })),
+  };
 }
 
 export async function deleteReportedContent({ contentType, contentId }) {
