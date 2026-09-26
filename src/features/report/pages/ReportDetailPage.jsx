@@ -77,8 +77,17 @@ export default function ReportDetailPage() {
     }
   };
 
-  const handleSaveMemo = async (adminMemo) => {
-    await saveMemoMutation.mutateAsync({ reportId, contentType, adminMemo });
+  // const handleSaveMemo = async (adminMemo) => {
+  //   await saveMemoMutation.mutateAsync({ reportId, contentType, adminMemo });
+  //   setToastMessage('메모가 저장되었습니다.');
+  // };
+  const handleSaveMemo = async (targetReportId, adminMemo) => {
+    await saveMemoMutation.mutateAsync({
+      reportId: targetReportId,
+      contentType,
+      adminMemo,
+    });
+
     setToastMessage('메모가 저장되었습니다.');
   };
 
@@ -118,13 +127,22 @@ export default function ReportDetailPage() {
             </div>
           </section>
 
-          <ReportHistoryList reports={detail.reports} onProcess={handleProcessReport} />
+          {/* <ReportHistoryList reports={detail.reports} onProcess={handleProcessReport} /> */}
 
-          <ReportMemoForm
+          <ReportHistoryList
+            reports={detail.reports}
+            onProcess={handleProcessReport}
+            onSaveMemo={handleSaveMemo}
+            savingReportId={
+              saveMemoMutation.isPending ? saveMemoMutation.variables?.reportId : null
+            }
+          />
+
+          {/* <ReportMemoForm
             initialMemo={detail.memo}
             isSaving={saveMemoMutation.isPending}
             onSave={handleSaveMemo}
-          />
+          /> */}
         </div>
       </div>
 

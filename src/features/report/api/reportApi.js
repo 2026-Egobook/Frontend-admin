@@ -150,7 +150,7 @@ export async function getReportDetail(contentType, contentId) {
     contentId: raw[config.idField],
     totalReportCount: raw.reportCount,
     originalContent: raw[config.contentField],
-    memo: raw.adminMemo ?? '',
+    // memo: raw.adminMemo ?? '',
     reports: (raw.reports ?? []).map((r) => ({
       reportId: r.reportId,
       reason: REASON_LABEL[r.reason] ?? r.reason,
@@ -159,6 +159,7 @@ export async function getReportDetail(contentType, contentId) {
       createdAt: r.createdAt,
       status: r.status ?? 'PENDING',
       statusLabel: STATUS_LABEL[r.status] ?? '미처리',
+      adminMemo: r.adminMemo ?? '',
     })),
   };
 }
