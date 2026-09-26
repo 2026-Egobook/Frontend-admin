@@ -21,6 +21,13 @@ export default function ReportDetailHeader({ detail }) {
         </div>
 
         <div>
+          <div className="text-sm font-normal leading-5 text-neutral-600">신고당한 사용자 ID</div>
+          <div className="text-base font-medium leading-6 text-neutral-950">
+            {detail.reportedUserId}
+          </div>
+        </div>
+
+        <div>
           <div className="text-sm font-normal leading-5 text-neutral-600">누적 신고 횟수</div>
           <div className="text-base font-medium leading-6 text-red-600">
             {detail.totalReportCount}회

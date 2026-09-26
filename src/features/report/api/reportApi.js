@@ -193,6 +193,7 @@ export async function getReportDetail(contentType, contentId) {
   const raw = unwrap(res);
 
   return {
+    reportedUserId: raw.reportedUserId,
     reportGroupId: raw[config.idField],
     contentType,
     contentTypeLabel: config.label,
