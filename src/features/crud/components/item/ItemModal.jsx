@@ -17,9 +17,13 @@ const statusOptions = [
 ];
 
 export default function ItemModal({ open, mode = 'create', initialData, onClose, onSubmit }) {
+  console.log('initialData:', initialData);
+
   const [category, setCategory] = useState(initialData?.category ?? '');
   const [price, setPrice] = useState(String(initialData?.price ?? ''));
   const [file, setFile] = useState(null);
+  const existingFileName = initialData?.name ? decodeURIComponent(initialData.name) : '';
+
   const [status, setStatus] = useState(initialData?.active ? 'ACTIVE' : '');
 
   const isEdit = mode === 'edit';
@@ -73,8 +77,12 @@ export default function ItemModal({ open, mode = 'create', initialData, onClose,
               <span className="flex h-full items-center justify-center border-r border-neutral-300 bg-neutral-100 px-4 text-sm font-medium text-neutral-950">
                 파일 선택
               </span>
-              <span className={`flex-1 truncate px-3 text-base ${file ? 'text-neutral-950' : 'text-neutral-400'}`}>
-                {file ? file.name : '선택된 파일 없음'}
+              <span
+                className={`flex-1 truncate px-3 text-base ${
+                  file || existingFileName ? 'text-neutral-950' : 'text-neutral-400'
+                }`}
+              >
+                {file ? file.name : existingFileName || '선택된 파일 없음'}
               </span>
               <input
                 type="file"
