@@ -133,58 +133,6 @@ export async function getReportList({ contentType = 'ALL', page = 1, size = 20 }
   return { content: merged, hasNext };
 }
 
-// export async function getReportDetail(contentType, reportId) {
-//   let res;
-//   let normalizer;
-
-//   if (contentType === 'LETTER') {
-//     res = await publicAPI.get(`/admin/reports/letters/${reportId}`);
-//     normalizer = (raw) => ({
-//       reportGroupId: raw.reportId,
-//       contentType: 'LETTER',
-//       contentTypeLabel: '편지',
-//       targetContentId: raw.letterId,
-//       targetContentIdLabel: '편지 ID',
-//       contentId: raw.letterId,
-//       totalReportCount: raw.reportCount,
-//       originalContent: raw.letterContent,
-//       memo: raw.adminMemo ?? '',
-//       reports: [{ reportId: raw.reportId, reason: REASON_LABEL[raw.reason] ?? raw.reason, description: raw.description, reporterId: raw.reporterId, createdAt: raw.createdAt, status: raw.status ?? 'PENDING', statusLabel: STATUS_LABEL[raw.status] ?? '미처리' }],
-//     });
-//   } else if (contentType === 'REPLY') {
-//     res = await publicAPI.get(`/admin/reports/replies/${reportId}`);
-//     normalizer = (raw) => ({
-//       reportGroupId: raw.reportId,
-//       contentType: 'REPLY',
-//       contentTypeLabel: '편지 답장',
-//       targetContentId: raw.replyId,
-//       targetContentIdLabel: '답장 ID',
-//       contentId: raw.replyId,
-//       totalReportCount: raw.reportCount,
-//       originalContent: raw.replyContent,
-//       memo: raw.adminMemo ?? '',
-//       reports: [{ reportId: raw.reportId, reason: REASON_LABEL[raw.reason] ?? raw.reason, description: raw.description, reporterId: raw.reporterId, createdAt: raw.createdAt, status: raw.status ?? 'PENDING', statusLabel: STATUS_LABEL[raw.status] ?? '미처리' }],
-//     });
-//   } else if (contentType === 'ANSWER') {
-//     res = await publicAPI.get(`/admin/reports/answers/${reportId}`);
-//     normalizer = (raw) => ({
-//       reportGroupId: raw.reportId,
-//       contentType: 'ANSWER',
-//       contentTypeLabel: '질문 답변',
-//       targetContentId: raw.answerId,
-//       targetContentIdLabel: '답변 ID',
-//       contentId: raw.answerId,
-//       totalReportCount: raw.reportCount,
-//       originalContent: raw.answerContent,
-//       memo: raw.adminMemo ?? '',
-//       reports: [{ reportId: raw.reportId, reason: REASON_LABEL[raw.reason] ?? raw.reason, description: raw.description, reporterId: raw.reporterId ?? raw.reporterNickname, createdAt: raw.reportedAt ?? raw.createdAt, status: raw.status ?? 'PENDING', statusLabel: STATUS_LABEL[raw.status] ?? '미처리' }],
-//     });
-//   } else {
-//     return null;
-//   }
-
-//   return normalizer(unwrap(res));
-// }
 export async function getReportDetail(contentType, contentId) {
   const config = CONTENT_CONFIG[contentType];
   if (!config) return null;
@@ -202,7 +150,6 @@ export async function getReportDetail(contentType, contentId) {
     contentId: raw[config.idField],
     totalReportCount: raw.reportCount,
     originalContent: raw[config.contentField],
-    memo: raw.adminMemo ?? '',
     reports: (raw.reports ?? []).map((r) => ({
       reportId: r.reportId,
       reason: REASON_LABEL[r.reason] ?? r.reason,
@@ -211,6 +158,7 @@ export async function getReportDetail(contentType, contentId) {
       createdAt: r.createdAt,
       status: r.status ?? 'PENDING',
       statusLabel: STATUS_LABEL[r.status] ?? '미처리',
+      adminMemo: r.adminMemo ?? '',
     })),
   };
 }
