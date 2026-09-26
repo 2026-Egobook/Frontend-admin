@@ -77,10 +77,6 @@ export default function ReportDetailPage() {
     }
   };
 
-  // const handleSaveMemo = async (adminMemo) => {
-  //   await saveMemoMutation.mutateAsync({ reportId, contentType, adminMemo });
-  //   setToastMessage('메모가 저장되었습니다.');
-  // };
   const handleSaveMemo = async (targetReportId, adminMemo) => {
     await saveMemoMutation.mutateAsync({
       reportId: targetReportId,
@@ -137,12 +133,6 @@ export default function ReportDetailPage() {
               saveMemoMutation.isPending ? saveMemoMutation.variables?.reportId : null
             }
           />
-
-          {/* <ReportMemoForm
-            initialMemo={detail.memo}
-            isSaving={saveMemoMutation.isPending}
-            onSave={handleSaveMemo}
-          /> */}
         </div>
       </div>
 
