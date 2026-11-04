@@ -25,6 +25,12 @@ import {
 import DropdownSelect from '@/shared/components/ui/DropdownSelect';
 import { useCreateItem, useDeleteItem, useItemList, useUpdateItem } from '../hooks/useItem';
 
+function getErrorMessage(error, fallback) {
+  const { status, data } = error.response ?? {};
+  const detail = data?.message ?? status;
+  return detail ? `${fallback} (${detail})` : fallback;
+}
+
 export default function CrudManagementPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') ?? 'psychology';
@@ -153,56 +159,48 @@ export default function CrudManagementPage() {
     setSelectedRow(null);
   };
 
-  const handleSubmitPsychology = async (form) => {
-    if (selectedRow) {
-      await updatePsychologyMutation.mutateAsync(form);
-      showToast('수정에 성공했습니다.');
-    } else {
-      await createPsychologyMutation.mutateAsync(form);
-      showToast('등록에 성공했습니다.');
+  const submitForm = async (form, createMutation, updateMutation) => {
+    const action = selectedRow ? '수정' : '등록';
+
+    try {
+      await (selectedRow ? updateMutation : createMutation).mutateAsync(form);
+      showToast(`${action}에 성공했습니다.`);
+      handleCloseFormModal();
+    } catch (error) {
+      showToast(getErrorMessage(error, `${action}에 실패했습니다.`));
     }
-    handleCloseFormModal();
   };
 
-  const handleSubmitQuestion = async (form) => {
-    if (selectedRow) {
-      await updateQuestionMutation.mutateAsync(form);
-      showToast('수정에 성공했습니다.');
-    } else {
-      await createQuestionMutation.mutateAsync(form);
-      showToast('등록에 성공했습니다.');
-    }
-    handleCloseFormModal();
-  };
+  const handleSubmitPsychology = (form) =>
+    submitForm(form, createPsychologyMutation, updatePsychologyMutation);
 
-  const handleSubmitItem = async (form) => {
-    if (selectedRow) {
-      await updateItemMutation.mutateAsync(form);
-      showToast('수정에 성공했습니다.');
-    } else {
-      await createItemMutation.mutateAsync(form);
-      showToast('등록에 성공했습니다.');
-    }
-    handleCloseFormModal();
-  };
+  const handleSubmitQuestion = (form) =>
+    submitForm(form, createQuestionMutation, updateQuestionMutation);
+
+  const handleSubmitItem = (form) =>
+    submitForm(form, createItemMutation, updateItemMutation);
 
   const handleDelete = async () => {
     if (!selectedRow) return;
 
-    if (activeTab === 'psychology') {
-      await deletePsychologyMutation.mutateAsync(selectedRow.id);
-    }
+    try {
+      if (activeTab === 'psychology') {
+        await deletePsychologyMutation.mutateAsync(selectedRow.id);
+      }
 
-    if (activeTab === 'question') {
-      await deleteQuestionMutation.mutateAsync(selectedRow.id);
-    }
+      if (activeTab === 'question') {
+        await deleteQuestionMutation.mutateAsync(selectedRow.id);
+      }
 
-    if (activeTab === 'item') {
-      await deleteItemMutation.mutateAsync(selectedRow.id);
-    }
+      if (activeTab === 'item') {
+        await deleteItemMutation.mutateAsync(selectedRow.id);
+      }
 
-    handleCloseDeleteModal();
-    showToast('삭제에 성공했습니다.');
+      handleCloseDeleteModal();
+      showToast('삭제에 성공했습니다.');
+    } catch (error) {
+      showToast(getErrorMessage(error, '삭제에 실패했습니다.'));
+    }
   };
 
   const isFetchingNext =
@@ -303,32 +301,35 @@ export default function CrudManagementPage() {
         {isFetchingNext && <Spinner />}
       </div>
 
-      <PsychologyKnowledgeModal
-        key={`psychology-${selectedRow?.id ?? 'new'}`}
-        open={formModalOpen && activeTab === 'psychology'}
-        mode={selectedRow ? 'edit' : 'create'}
-        initialData={selectedRow}
-        onClose={handleCloseFormModal}
-        onSubmit={handleSubmitPsychology}
-      />
+      {formModalOpen && activeTab === 'psychology' && (
+        <PsychologyKnowledgeModal
+          open
+          mode={selectedRow ? 'edit' : 'create'}
+          initialData={selectedRow}
+          onClose={handleCloseFormModal}
+          onSubmit={handleSubmitPsychology}
+        />
+      )}
 
-      <QuestionDummyModal
-        key={`question-${selectedRow?.id ?? 'new'}`}
-        open={formModalOpen && activeTab === 'question'}
-        mode={selectedRow ? 'edit' : 'create'}
-        initialData={selectedRow}
-        onClose={handleCloseFormModal}
-        onSubmit={handleSubmitQuestion}
-      />
+      {formModalOpen && activeTab === 'question' && (
+        <QuestionDummyModal
+          open
+          mode={selectedRow ? 'edit' : 'create'}
+          initialData={selectedRow}
+          onClose={handleCloseFormModal}
+          onSubmit={handleSubmitQuestion}
+        />
+      )}
 
-      <ItemModal
-        key={`item-${selectedRow?.id ?? 'new'}`}
-        open={formModalOpen && activeTab === 'item'}
-        mode={selectedRow ? 'edit' : 'create'}
-        initialData={selectedRow}
-        onClose={handleCloseFormModal}
-        onSubmit={handleSubmitItem}
-      />
+      {formModalOpen && activeTab === 'item' && (
+        <ItemModal
+          open
+          mode={selectedRow ? 'edit' : 'create'}
+          initialData={selectedRow}
+          onClose={handleCloseFormModal}
+          onSubmit={handleSubmitItem}
+        />
+      )}
 
       <DeleteConfirmModal
         open={deleteModalOpen}
